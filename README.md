@@ -26,12 +26,13 @@ addresses each of those critiques with working code and grant-ready figures.
 
 ## Session Progress
 
-| Session | Steps | Status | What was built |
-|---|---|---|---|
-| 1 | 0–2 | ✅ Complete | Project scaffold, shared figure style, content layer (3 modules, 20 questions, user profiles) |
-| 2 | 3–6 | ✅ Complete | 2PL IRT engine, simulation pipeline, Figures 2–4 |
-| 3 | 7–11 | ✅ Complete | BKT engine, content recommender, Figures 5–7 |
-| 4 | 12–15 | ✅ Complete | Streamlit app (Figure 1), CEDAR vs. BIRCH schematic (Figure 8), compile_all.py |
+| Session | Status | What was built |
+|---|---|---|
+| 1 | ✅ Complete | Project scaffold, shared figure style, content layer (3 modules, 20 questions, user profiles) |
+| 2 | ✅ Complete | 2PL IRT engine, simulation pipeline, Figures 2–4 |
+| 3 | ✅ Complete | BKT engine, content recommender, Figures 5–7 |
+| 4 | ✅ Complete | Streamlit app (Figure 1), CEDAR vs. BIRCH schematic (Figure 8), compile_all.py |
+| Post-session | ✅ Complete | Figure 6 redesigned as 2×2 small multiples; Figure 8 overlap fixed; Figure 1 readability improved; full 13-page technical report (`generate_report.py`); mock AI misconception feedback panel in Figure 1; LLM integration vision page added to report |
 
 ---
 
@@ -39,12 +40,12 @@ addresses each of those critiques with working code and grant-ready figures.
 
 | Figure | Description | Reviewer Concern Addressed | Status |
 |---|---|---|---|
-| **Fig 1** | Prototype screenshots — patient vs. physician views | No ALE proof-of-concept; UI too dense for patients | ✅ Done |
+| **Fig 1** | Prototype screenshots — patient view (unanswered) + physician view (wrong answer → AI misconception feedback panel) | No ALE proof-of-concept; UI too dense for patients | ✅ Done |
 | **Fig 2** | IRT Item Characteristic Curves (2PL model, 3 panels) | IRT model unspecified (NIH Critique 1) | ✅ Done |
 | **Fig 3** | Item parameter table (a, b, Bloom's, demographic tags) | No item calibration detail; no demographic variables | ✅ Done |
 | **Fig 4** | Learning objectives taxonomy (Bloom's + IRT difficulty) | No learning objectives taxonomy defined | ✅ Done |
 | **Fig 5** | Simulated learner trajectories (4 user profiles, BKT) | Adaptive logic not validated | ✅ Done |
-| **Fig 6** | Adaptive vs. static knowledge gain comparison | Why individualized learning improves outcomes | ✅ Done |
+| **Fig 6** | Adaptive vs. static knowledge gain — 2×2 small multiples | Why individualised learning improves outcomes | ✅ Done |
 | **Fig 7** | Demographically-tailored learning paths | No demographic variables; sex/gender tailoring missing | ✅ Done |
 | **Fig 8** | CEDAR vs. BIRCH differentiation schematic | CEDAR necessity questioned (DOD Reviewer B) | ✅ Done |
 
@@ -68,12 +69,12 @@ cedar-pkd_prototype/
 │
 ├── figures/
 │   ├── style.py              ← Shared apply_cedar_style() + save_figure() + color palettes
-│   ├── fig1_app_screenshot.py ← Prototype UI mock (patient vs. physician views)
+│   ├── fig1_app_screenshot.py ← Prototype UI mock (patient view + physician wrong-answer + AI panel)
 │   ├── fig2_icc.py           ← ICC curves (3-panel, one per module)
 │   ├── fig3_item_params.py   ← Item parameter table
 │   ├── fig4_taxonomy.py      ← Learning objectives taxonomy
 │   ├── fig5_trajectories.py  ← BKT mastery trajectories (4 profiles × 3 topics)
-│   ├── fig6_adaptive_vs_static.py  ← Adaptive vs. static knowledge gain
+│   ├── fig6_adaptive_vs_static.py  ← Adaptive vs. static — 2×2 small multiples
 │   ├── fig7_demographic_paths.py   ← Demographically-tailored learning paths
 │   ├── fig8_cedar_birch.py         ← CEDAR vs. BIRCH differentiation schematic
 │   └── compile_all.py              ← Regenerate all 8 figures in one command
@@ -81,7 +82,8 @@ cedar-pkd_prototype/
 ├── app/
 │   └── cedar_app.py          ← Streamlit ALE app (streamlit run app/cedar_app.py)
 │
-├── outputs/                  ← Generated figures (gitignored — regenerate locally)
+├── generate_report.py        ← 13-page technical report PDF (see Technical Report section)
+├── outputs/                  ← Generated figures + report (gitignored — regenerate locally)
 ├── requirements.txt
 └── README.md
 ```
@@ -134,6 +136,35 @@ streamlit run app/cedar_app.py
 
 All figures are saved to `outputs/` as both 300 DPI PNG and PDF.
 The `outputs/` directory is gitignored — run the scripts above to regenerate locally.
+
+---
+
+## Technical Report
+
+`generate_report.py` produces a 13-page letter-size PDF at `outputs/cedar_pkd_report.pdf`
+that documents the full prototype for grant reviewers.
+
+```bash
+python generate_report.py
+```
+
+### Report page map
+
+| Page | Title | Contents |
+|---|---|---|
+| 1 | Title | Grant context, reviewer critiques overview |
+| 2 | System Architecture | CEDAR-PKD component diagram |
+| 3 | Session 1 — Content Layer | 3 modules, 20 questions, Bloom's taxonomy, demographic tags, simulation profiles |
+| 4 | Session 2 — IRT Model + Fig 2 | 2PL IRT rationale, ICC curves |
+| 5 | Figures 3 & 4 | Item parameter table + learning objectives taxonomy (full page width) |
+| 6 | Session 3 — BKT + Recommender | BKT update rule, recommender scoring formula |
+| 7 | Figure 5 | Simulated BKT mastery trajectories |
+| 8 | Figure 6 | Adaptive vs. static comparison (2×2 small multiples) |
+| 9 | Figure 7 | Demographically-tailored learning paths |
+| 10 | Session 4 — Prototype UI (Fig 1) | App mock-up with AI misconception feedback panel |
+| 11 | Figure 8 | CEDAR vs. BIRCH schematic with purple shared-driver box explained |
+| 12 | Summary | Reviewer critique → response mapping table + conclusion |
+| 13 | Production Vision — LLM Integration | Architecture table, 4 planned LLM features with testable hypotheses |
 
 ---
 
@@ -209,19 +240,19 @@ score_i = (1 − P(mastery_topic_i)) × a_i
 ```
 
 Audience filtering ensures patient-only items are never shown to physicians and
-vice versa.  Items already answered are excluded.  The highest-scoring eligible
+vice versa. Items already answered are excluded. The highest-scoring eligible
 item is selected at each step (greedy one-step look-ahead).
 
 **Figure 6 note:** "Topics mastered" uses a running maximum — once a topic
 crosses P(mastery) = 0.80 it is counted as mastered for the rest of the session,
-even if a subsequent slip lowers the BKT estimate.  This is the clinically
+even if a subsequent slip lowers the BKT estimate. This is the clinically
 appropriate interpretation: mastery gained is not "unlearned" in one session.
 
 ---
 
 ## CEDAR-PKD vs. BIRCH-PKD (Figure 8)
 
-DOD Reviewer B asked why CEDAR is needed given BIRCH.  They are complementary
+DOD Reviewer B asked why CEDAR is needed given BIRCH. They are complementary
 tools that address different types of knowledge gaps:
 
 | | BIRCH-PKD | CEDAR-PKD |
@@ -234,3 +265,33 @@ tools that address different types of knowledge gaps:
 
 Neither tool alone is sufficient: BIRCH answers questions users know to ask;
 CEDAR surfaces and fills gaps users did not know they had.
+
+The **purple box** at the top of Figure 8 represents the shared problem driver —
+ADPKD knowledge gaps in patients and clinicians — from which both tools are
+responses. Arrows flow downward from it to both BIRCH and CEDAR.
+
+---
+
+## LLM Integration Vision (Production CEDAR-PKD)
+
+The prototype implements the psychometric core (IRT + BKT + demographic recommender).
+Production CEDAR-PKD adds LLMs as a complementary layer — not replacing the
+adaptive engine but handling tasks LLMs are uniquely suited for:
+
+| Layer | Technology | Status |
+|---|---|---|
+| Sequencing | IRT + BKT | ✅ Implemented |
+| Explanation | LLM (GPT-4o / Claude) — misconception-targeted feedback | 🟣 Prototyped (Fig 1) |
+| BIRCH handoff | BKT threshold → BIRCH trigger | 🔵 Designed |
+| Item scaling | LLM generation → IRT validation pipeline | 🟠 Proposed |
+
+**Four planned features** (see report page 13 for full detail + testable hypotheses):
+1. **Misconception-Targeted Explanations** — wrong answer triggers LLM feedback conditioned on the item's `distractor_misconceptions` tag, learner role, and CKD stage *(prototyped in Fig 1)*
+2. **BKT-Triggered BIRCH Handoff** — persistent gap (P < 0.50 for 3 interactions) surfaces a contextual BIRCH prompt
+3. **LLM Item Generation + IRT Validation Pipeline** — scales bank from 20 → 200+ calibrated items
+4. **Personalized Session Debrief Narrative** — LLM-written end-of-session summary tailored to role and mastery state
+
+**Core argument:** IRT + BKT decide *what to teach next and when to stop*;
+LLMs decide *how to explain it* for this specific learner in this specific context.
+Pure LLM tutors lack a principled stopping criterion, measurable item properties,
+and auditable mastery tracking. This combination provides all three.
