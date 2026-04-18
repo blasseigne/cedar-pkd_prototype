@@ -30,7 +30,7 @@ addresses each of those critiques with working code and grant-ready figures.
 |---|---|---|---|
 | 1 | 0–2 | ✅ Complete | Project scaffold, shared figure style, content layer (3 modules, 20 questions, user profiles) |
 | 2 | 3–6 | ✅ Complete | 2PL IRT engine, simulation pipeline, Figures 2–4 |
-| 3 | 7–11 | 🔲 Pending | BKT engine, content recommender, Figures 5–7 |
+| 3 | 7–11 | ✅ Complete | BKT engine, content recommender, Figures 5–7 |
 | 4 | 12–15 | 🔲 Pending | Streamlit app (Figure 1), CEDAR vs. BIRCH schematic (Figure 8), compile_all.py |
 
 ---
@@ -43,9 +43,9 @@ addresses each of those critiques with working code and grant-ready figures.
 | **Fig 2** | IRT Item Characteristic Curves (2PL model, 3 panels) | IRT model unspecified (NIH Critique 1) | ✅ Done |
 | **Fig 3** | Item parameter table (a, b, Bloom's, demographic tags) | No item calibration detail; no demographic variables | ✅ Done |
 | **Fig 4** | Learning objectives taxonomy (Bloom's + IRT difficulty) | No learning objectives taxonomy defined | ✅ Done |
-| **Fig 5** | Simulated learner trajectories (4 user profiles, BKT) | Adaptive logic not validated | 🔲 Session 3 |
-| **Fig 6** | Adaptive vs. static knowledge gain comparison | Why individualized learning improves outcomes | 🔲 Session 3 |
-| **Fig 7** | Demographically-tailored learning paths | No demographic variables; sex/gender tailoring missing | 🔲 Session 3 |
+| **Fig 5** | Simulated learner trajectories (4 user profiles, BKT) | Adaptive logic not validated | ✅ Done |
+| **Fig 6** | Adaptive vs. static knowledge gain comparison | Why individualized learning improves outcomes | ✅ Done |
+| **Fig 7** | Demographically-tailored learning paths | No demographic variables; sex/gender tailoring missing | ✅ Done |
 | **Fig 8** | CEDAR vs. BIRCH differentiation schematic | CEDAR necessity questioned (DOD Reviewer B) | 🔲 Session 4 |
 
 ---
@@ -113,6 +113,9 @@ python simulation/simulate.py
 python figures/fig2_icc.py
 python figures/fig3_item_params.py
 python figures/fig4_taxonomy.py
+python figures/fig5_trajectories.py
+python figures/fig6_adaptive_vs_static.py
+python figures/fig7_demographic_paths.py
 ```
 
 ### Generate all figures at once (available after Session 4)
@@ -158,3 +161,49 @@ The 2-Parameter Logistic (2PL) model was selected over:
 
 Parameters estimated by item-level MLE (L-BFGS-B with bounds) from 100 simulated
 users. All 20 items converged. Estimated `b` tracks difficulty priors closely.
+
+---
+
+## BKT Model Details
+
+Bayesian Knowledge Tracing (Corbett & Anderson, 1994) maintains a per-topic
+probabilistic mastery estimate updated after every quiz interaction:
+
+| Parameter | Description | Default |
+|---|---|---|
+| `p_learn` | P(transition: unlearned → learned) per opportunity | 0.25–0.30 per topic |
+| `p_guess` | P(correct \| unlearned) | 0.15–0.20 per topic |
+| `p_slip`  | P(incorrect \| learned) | 0.10–0.12 per topic |
+| `p_known` | P(mastery) — updated dynamically | from `initial_knowledge_state` |
+
+**Update rule** (two-step Bayesian):
+1. Posterior given response: `P(known|obs) = P(known)·L(obs|known) / P(obs)`
+2. Learning transition: `P(known_new) = P(known|obs) + (1 − P(known|obs)) · p_learn`
+
+**Mastery threshold:** P(mastery) ≥ 0.80
+
+BKT was chosen over raw accuracy tracking because it accounts for guessing and
+slipping, giving a principled stopping criterion and per-topic gap quantification
+that drives the content recommender.
+
+---
+
+## Content Recommender Details
+
+Items are scored at each adaptive step:
+
+```
+score_i = (1 − P(mastery_topic_i)) × a_i
+          + 0.30  [if sex_specific and learner sex is specified]
+          + 0.40  [if family_planning_relevant and learner.family_planning = True]
+          + 0.30  [if disease_stage_relevant includes learner's CKD stage]
+```
+
+Audience filtering ensures patient-only items are never shown to physicians and
+vice versa.  Items already answered are excluded.  The highest-scoring eligible
+item is selected at each step (greedy one-step look-ahead).
+
+**Figure 6 note:** "Topics mastered" uses a running maximum — once a topic
+crosses P(mastery) = 0.80 it is counted as mastered for the rest of the session,
+even if a subsequent slip lowers the BKT estimate.  This is the clinically
+appropriate interpretation: mastery gained is not "unlearned" in one session.
