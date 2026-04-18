@@ -346,18 +346,33 @@ def page_content_layer():
 
     y = _subsection(ax, ML, y, "Question Metadata Fields")
     y = _bullets(ax, ML, y, [
-        "blooms_level \u2014 Cognitive level: remember / understand / apply (Bloom's Taxonomy).",
+        "blooms_level \u2014 Cognitive level per question using Bloom's Taxonomy: "
+        "remember (recall a fact, e.g. 'What does ADPKD stand for?'), "
+        "understand (explain a concept, e.g. 'How is ADPKD inherited?'), or "
+        "apply (use knowledge in a new situation, e.g. 'Which patient qualifies for tolvaptan?'). "
+        "The three levels are ordered by cognitive complexity. Tagging items ensures the "
+        "curriculum spans surface-level recall through deeper clinical reasoning \u2014 "
+        "appropriate for both lay patients and specialist physicians.",
         "difficulty_prior \u2014 Expert-assigned difficulty; seeded as the IRT b-parameter prior.",
         "audience \u2014 patient / physician / both. Enforces eligibility in the recommender: "
         "patient-only items are never shown to physicians and vice versa.",
         "demographic_tags \u2014 Three tags: sex_specific, family_planning_relevant, "
-        "disease_stage_relevant (list of CKD stages). Drive boost scoring in the recommender.",
+        "disease_stage_relevant (CKD stages). When a question's tag matches the learner's "
+        "profile, the recommender adds a fixed bonus to that question's selection score "
+        "(sex-specific +0.30, family-planning +0.40, disease-stage match +0.30), "
+        "making it more likely to be served next without hard-filtering other items out.",
         "distractor_misconceptions \u2014 A labelled misconception per wrong-answer option, "
         "enabling future targeted feedback and remediation.",
     ])
     y -= 0.05
 
     y = _subsection(ax, ML, y, "Simulation Profiles (Figures 5 & 6)")
+    y = _para(ax, ML, y,
+        "The \u03b8 (theta) column is the IRT latent ability parameter \u2014 a standardised scale "
+        "centred at 0 with standard deviation 1. \u03b8 = 0 represents average knowledge across "
+        "the population; negative values indicate below-average baseline; positive values "
+        "indicate above-average. These values determine each profile's probability of "
+        "answering any given item correctly before the session begins.")
     sim_profiles = [
         ("Newly Diagnosed Patient",  "\u03b8 = \u22121.5", "Low initial knowledge; no prior ADPKD education"),
         ("Experienced Patient",      "\u03b8 =  0.0",      "Average ability; some familiarity with condition"),
@@ -386,11 +401,14 @@ def page_content_layer():
     y = _subsection(ax, ML, y, "Design Rationale")
     y = _para(ax, ML, y,
         "All metadata was assigned by the PI team to reflect clinical reality. Bloom's "
-        "levels span remember through apply, matching the cognitive demands of both "
-        "patient self-management and clinical decision-making. The three demographic "
-        "tags represent the most clinically salient ADPKD personalisation axes: "
-        "sex-specific disease expression, reproductive counselling needs, and CKD "
-        "stage-specific management decisions.")
+        "levels span three cognitive tiers \u2014 remember (fact recall), understand "
+        "(concept explanation), and apply (clinical reasoning) \u2014 covering the full "
+        "range of demands faced by patients managing their own disease and physicians "
+        "making treatment decisions. No higher Bloom's levels (analyse, evaluate, create) "
+        "were included because the prototype scope is knowledge acquisition, not expert "
+        "synthesis. The three demographic tags represent the most clinically salient "
+        "ADPKD personalisation axes: sex-specific disease expression, reproductive "
+        "counselling needs, and CKD stage-specific management decisions.")
 
     _footer(ax)
     return fig
@@ -466,6 +484,10 @@ def page_fig3_fig4():
     y = _running_header(ax)
     y = _section(ax, ML, y, "Item Calibration Table & Learning Objectives Taxonomy")
 
+    # Use full page width for figures (narrow side margins only)
+    FIG_X = 0.20          # left edge for figures
+    FIG_W = PW - 0.40     # 8.10 inches — full bleed minus tiny margins
+
     y = _subsection(ax, ML, y, "Figure 3 \u2014 Item Parameter Table")
     y = _para(ax, ML, y,
         "All 20 calibrated items with IRT parameters, Bloom's level, demographic tags, "
@@ -473,18 +495,18 @@ def page_fig3_fig4():
         "item calibration detail and evidence of demographic variable incorporation.")
     y -= 0.06
 
-    fig3_h = 3.20
+    fig3_h = 3.60
     fig3_y = y - fig3_h
-    _fig_embed(fig, _FIG("fig3_item_params"), ML, fig3_y, CW, fig3_h)
-    y = fig3_y - 0.06
+    _fig_embed(fig, _FIG("fig3_item_params"), FIG_X, fig3_y, FIG_W, fig3_h)
+    y = fig3_y - 0.04
     _caption(ax, ML, y,
         "Figure 3. Calibrated item parameter table showing question ID, module, "
         "estimated discrimination (a) and difficulty (b), Bloom's level, audience, "
         "and active demographic tags for all 20 ADPKD education items.")
 
-    y -= 0.22
-    _hline(ax, y + 0.10, color=DGRAY, lw=0.4)
-    y -= 0.08
+    y -= 0.18
+    _hline(ax, y + 0.08, color=DGRAY, lw=0.4)
+    y -= 0.06
 
     y = _subsection(ax, ML, y, "Figure 4 \u2014 Learning Objectives Taxonomy")
     y = _para(ax, ML, y,
@@ -494,10 +516,10 @@ def page_fig3_fig4():
         "taxonomy linked to item psychometrics.")
     y -= 0.06
 
-    fig4_h = 3.10
+    fig4_h = 3.50
     fig4_y = y - fig4_h
-    _fig_embed(fig, _FIG("fig4_taxonomy"), ML, fig4_y, CW, fig4_h)
-    y = fig4_y - 0.06
+    _fig_embed(fig, _FIG("fig4_taxonomy"), FIG_X, fig4_y, FIG_W, fig4_h)
+    y = fig4_y - 0.04
     _caption(ax, ML, y,
         "Figure 4. Learning objectives taxonomy. Each point = one item. "
         "x-axis = Bloom's level, y-axis = IRT difficulty (b), "
