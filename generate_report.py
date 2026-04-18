@@ -773,21 +773,29 @@ def page_fig1():
         "and monitors mastery progress in a live sidebar.")
     y = _para(ax, ML, y,
         "Figure 1 shows mock-up screenshots of both the patient view and the "
-        "physician view. Patient-facing content uses simplified language; "
-        "physician-facing content includes clinical detail and management implications. "
-        "Mastery progress bars in the sidebar update after each answer, giving "
-        "learners real-time visibility into their knowledge gaps.")
+        "physician view. The left panel shows a patient awaiting a genetics "
+        "question; the right panel shows a clinician who has selected a wrong "
+        "answer. Every wrong answer triggers CEDAR\u2019s AI feedback layer: "
+        "the system identifies the specific misconception behind the incorrect "
+        "distractor (drawn from the item\u2019s distractor_misconceptions "
+        "metadata) and generates a personalized, role-aware explanation via LLM. "
+        "The purple panel at the bottom of the physician view is a prototype of "
+        "this AI-Targeted Explanation \u2014 conditioned on learner role, CKD "
+        "stage, and the exact misconception tag. Mastery progress bars in the "
+        "sidebar update after each answer, giving learners real-time visibility "
+        "into their knowledge gaps.")
     y -= 0.10
 
-    fig1_h = 5.90
+    fig1_h = 5.00
     fig1_y = y - fig1_h
     _fig_embed(fig, _FIG("fig1_app_screenshot"), ML, fig1_y, CW, fig1_h)
     y = fig1_y - 0.06
-    _caption(ax, ML, y,
-        "Figure 1. CEDAR-PKD prototype UI mock-up. Left: patient view with a "
-        "genetics question and mastery progress sidebar. Right: physician view "
-        "with a clinical management question, correct answer revealed, and "
-        "explanation. Both panels reflect real BKT mastery states.")
+    y = _caption(ax, ML, y,
+        "Figure 1. CEDAR-PKD prototype UI. Left: patient view, unanswered genetics "
+        "question. Right: clinician view \u2014 wrong answer B selected (tolvaptan "
+        "misconception); purple AI panel shows CEDAR\u2019s LLM-generated, "
+        "role-aware corrective explanation. Red\u202f=\u202fwrong; "
+        "green\u202f=\u202fcorrect; purple\u202f=\u202fAI feedback.")
 
     y -= 0.22
     _hline(ax, y + 0.12, color=DGRAY, lw=0.4)
@@ -970,6 +978,149 @@ def page_summary():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Page 13 — LLM Integration Vision
+# ─────────────────────────────────────────────────────────────────────────────
+
+def page_llm_vision():
+    fig, ax = _page()
+    y = _running_header(ax)
+    y = _section(ax, ML, y,
+                 "Production Vision \u2014 LLM Integration in CEDAR-PKD")
+
+    y = _para(ax, ML, y,
+        "The prototype implements the psychometric core of CEDAR-PKD: IRT item "
+        "calibration, BKT mastery tracking, and demographic-aware content "
+        "sequencing. Production CEDAR-PKD adds a second layer \u2014 large "
+        "language models \u2014 not to replace the principled adaptive engine but "
+        "to handle the tasks LLMs are uniquely suited for: generating natural "
+        "language, personalising explanations to role and context, and scaling "
+        "the item bank beyond what manual authoring can sustain.")
+
+    y = _para(ax, ML, y,
+        "This combination is deliberately stronger than either component alone. "
+        "Pure LLM tutors lack a principled sequencing criterion, measurable "
+        "psychometric item properties, and an auditable stopping rule. "
+        "Pure IRT/BKT systems deliver calibrated sequencing but fixed, "
+        "one-size-fits-all text. CEDAR-PKD combines both: IRT + BKT decide "
+        "\u2018what to teach next and when to stop\u2019; LLMs decide "
+        "\u2018how to explain it\u2019 for this specific learner in this "
+        "specific clinical context.")
+
+    # ── Architecture table ────────────────────────────────────────────────
+    y -= 0.06
+    col_x = [ML, ML + 1.30, ML + 3.00, ML + 5.45]
+    headers = ["Layer", "Technology", "Function", "Status"]
+    for cx, h in zip(col_x, headers):
+        ax.text(cx, y, h, ha="left", va="top",
+                fontsize=8.5, fontweight="bold", color=DARK)
+    y -= 0.18
+    _hline(ax, y + 0.04, color=DARK, lw=0.6)
+
+    STATUS_COLORS = {
+        "Implemented": GREEN,
+        "Prototyped":  PURPLE,
+        "Designed":    BLUE,
+        "Proposed":    ORANGE,
+    }
+
+    arch_rows = [
+        ("Sequencing",     "IRT + BKT",
+         "Selects next item; measures mastery;\nprovides auditable stopping criterion",
+         "Implemented"),
+        ("Explanation",    "LLM (GPT-4o / Claude)",
+         "Personalized, misconception-targeted\nfeedback conditioned on role + context",
+         "Prototyped"),
+        ("BIRCH handoff",  "BKT threshold \u2192 BIRCH trigger",
+         "Routes persistent gaps to reactive\nQ&A chatbot for deeper exploration",
+         "Designed"),
+        ("Item scaling",   "LLM \u2192 IRT validation pipeline",
+         "Generates + calibrates new items to\ngrow bank from 20 \u2192 200+ questions",
+         "Proposed"),
+    ]
+    row_h = 0.50
+    for i, (layer, tech, func, status) in enumerate(arch_rows):
+        ry = y - i * row_h
+        _box(ax, ML - 0.05, ry - row_h + 0.04, CW + 0.10, row_h,
+             fc=LGRAY if i % 2 == 0 else "white", ec="none",
+             radius=0.01, text="", zorder=1)
+        ax.text(col_x[0], ry - 0.06, layer,  ha="left", va="top",
+                fontsize=8, fontweight="bold", color=DARK)
+        ax.text(col_x[1], ry - 0.06, tech,   ha="left", va="top",
+                fontsize=7.8, color=TEXT, fontstyle="italic")
+        ax.text(col_x[2], ry - 0.06, func,   ha="left", va="top",
+                fontsize=8, color=TEXT, linespacing=1.4)
+        sc = STATUS_COLORS.get(status, GRAY)
+        _box(ax, col_x[3], ry - 0.25, 1.20, 0.26,
+             fc=sc, ec="none", radius=0.04,
+             text=status, tsize=7.5, tcolor="white", tbold=True, zorder=3)
+    y -= len(arch_rows) * row_h + 0.22
+
+    # ── Four planned features ─────────────────────────────────────────────
+    y = _subsection(ax, ML, y, "Planned LLM Features for Production CEDAR-PKD")
+
+    features = [
+        (PURPLE, "Prototyped \u2014 Fig 1",
+         "1.  Misconception-Targeted Explanations",
+         "Every wrong answer carries a distractor_misconceptions tag from "
+         "the item metadata. The LLM receives: the misconception label, the "
+         "learner\u2019s role (patient vs. clinician), and their current "
+         "clinical context (e.g., CKD Stage 4, family_planning=True). "
+         "It generates a corrective explanation targeting that specific "
+         "conceptual error rather than a generic \u2018incorrect\u2019 message. "
+         "Testable outcome: does targeted feedback resolve the specific "
+         "misconception faster than generic feedback across sessions?"),
+        (BLUE, "Designed",
+         "2.  BKT-Triggered BIRCH Handoff",
+         "When BKT detects a persistent mastery gap \u2014 P(mastery) below "
+         "0.50 for three consecutive interactions on the same topic \u2014 "
+         "CEDAR surfaces a contextual prompt inviting the learner to ask "
+         "BIRCH a question on that topic. This creates a defined, auditable "
+         "handoff from proactive to reactive learning. Testable outcome: "
+         "does the BKT-triggered handoff accelerate gap closure compared "
+         "to CEDAR-only sessions?"),
+        (ORANGE, "Proposed",
+         "3.  LLM Item Generation + IRT Validation Pipeline",
+         "Clinical content (ADPKD guidelines, case vignettes) is fed to "
+         "an LLM that drafts new items with Bloom\u2019s level and "
+         "demographic tags pre-assigned. Items pass SME review, then enter "
+         "IRT calibration via pilot responses before joining the active bank. "
+         "This scales the question bank from the current 20 prototype items "
+         "to 200+ calibrated items required for a full clinical trial, "
+         "while preserving psychometric quality control at every step."),
+        (ORANGE, "Proposed",
+         "4.  Personalized Session Debrief Narrative",
+         "At session end, the LLM receives the learner\u2019s BKT mastery "
+         "vector, the topics answered, and their demographic profile, and "
+         "generates a brief personalized summary: what was mastered, which "
+         "gap remains largest, and what CEDAR will prioritize next session. "
+         "Written in role-appropriate language (plain for patients, clinical "
+         "for physicians). Testable outcome: do learners who receive "
+         "narrative debriefs show higher session return rates and faster "
+         "cumulative gap closure?"),
+    ]
+
+    for color, badge, title, body in features:
+        # Colored left strip + title bar
+        _box(ax, ML, y - 0.28, CW, 0.28,
+             fc=color, ec="none", radius=0.04, text="", zorder=2)
+        ax.text(ML + 0.16, y - 0.14, title,
+                ha="left", va="center", fontsize=9, fontweight="bold",
+                color="white", zorder=4)
+        # Badge right-aligned in header
+        _box(ax, ML + CW - 1.40, y - 0.24, 1.32, 0.18,
+             fc="white", ec="none", radius=0.03,
+             text=badge, tsize=7, tcolor=color, tbold=True, zorder=4)
+        y -= 0.28
+        # Body text
+        y = _para(ax, ML + 0.12, y - 0.04, body,
+                  width=CW - 0.18, size=8.5, lh=0.155)
+        y -= 0.06
+
+    _footer(ax)
+    return fig
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -990,6 +1141,7 @@ def main():
         ("Figure 1 (UI)",      page_fig1),
         ("Figure 8",           page_fig8),
         ("Summary",            page_summary),
+        ("LLM Vision",         page_llm_vision),
     ]
 
     with PdfPages(out_path) as pdf:

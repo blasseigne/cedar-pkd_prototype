@@ -102,9 +102,19 @@ PHYSICIAN_Q = {
         "C": "Testing will decide if transplant is needed",
         "D": "Yes — informs cascade testing & donor evaluation",
     },
-    "selected":     "D",
+    "selected":     "B",          # wrong answer — triggers AI feedback panel
     "correct_key":  "D",
     "answered":     True,
+    # Misconception tag drawn from distractor_misconceptions in modules.json
+    "misconception":    "tolvaptan_stage_misapplication",
+    # Mock LLM response conditioned on learner role + CKD stage context
+    "llm_explanation":  ("Tolvaptan slows early-stage ADPKD cyst growth "
+                         "and is not indicated at CKD Stage 4. Even so, "
+                         "genetic testing remains valuable: PKD1/PKD2 "
+                         "variants inform cascade screening and "
+                         "living-donor eligibility assessment."),
+    "llm_context":      "Clinician \u00b7 CKD Stage 4",
+    # Static explanation kept for reference (shown only when correct answer selected)
     "explanation":  ("Even at advanced CKD, genetic testing informs cascade "
                      "testing of at-risk relatives and living donor eligibility "
                      "evaluation. Tolvaptan is for earlier-stage patients."),
@@ -246,6 +256,8 @@ def _draw_panel(ax, state, q, role_label, accent):
             fc, ec, tc = BTN_NORMAL, EDGE_NORMAL, TEXT_MAIN
         elif key == q["correct_key"]:
             fc, ec, tc = BTN_CORRECT, EDGE_CORRECT, "#1A5C30"
+        elif q.get("selected") == key:          # wrong answer chosen
+            fc, ec, tc = "#FDEDEC", "#E74C3C", "#C0392B"
         else:
             fc, ec, tc = BTN_NEUTRAL, "#BBBFC0", TEXT_MUTED
 
@@ -255,8 +267,51 @@ def _draw_panel(ax, state, q, role_label, accent):
         _txt(ax, mx + 0.060, by + btn_h / 2,
              text, fs=6.8, c=tc, z=4)
 
-    # Explanation panel (physician view only)
-    if q["answered"] and "explanation" in q:
+    # ── Post-answer feedback panel ────────────────────────────────────────
+    # If the learner chose wrong → AI misconception-targeted explanation.
+    # If the learner chose correctly → static domain explanation.
+    if q["answered"] and q.get("selected") != q["correct_key"] \
+            and "llm_explanation" in q:
+
+        # ── AI-generated misconception panel ─────────────────────────────
+        AI_PURPLE = "#8E44AD"
+        exp_y = 0.022
+        exp_h = 0.192
+        _rect(ax, mx, exp_y, mw, exp_h, "#F5EEF8", ec=AI_PURPLE,
+              lw=1.0, r=0.012, z=3)
+
+        # Purple header bar
+        _rect(ax, mx, exp_y + exp_h - 0.040, mw, 0.040,
+              AI_PURPLE, ec=None, r=0.010, z=4)
+        # Header bar: AI brand
+        _txt(ax, mx + mw / 2, exp_y + exp_h - 0.020,
+             "AI  \u00b7  CEDAR-PKD  \u00b7  Misconception Feedback",
+             fs=5.8, c="white", weight="bold", va="center", ha="center", z=5)
+
+        # Misconception tag
+        misc = q.get("misconception", "").replace("_", " ")
+        _txt(ax, mx + 0.016, exp_y + exp_h - 0.056,
+             f"Misconception: {misc}",
+             fs=5.6, c="#6C3483", weight="bold", va="top", z=4)
+
+        # Word-wrapped explanation text (≤ 3 lines)
+        words = q["llm_explanation"].split()
+        lines, cur = [], ""
+        for w in words:
+            if len(cur) + len(w) + 1 > 48:
+                lines.append(cur); cur = w
+            else:
+                cur = (cur + " " + w).strip()
+        if cur:
+            lines.append(cur)
+        for li, line in enumerate(lines[:3]):
+            _txt(ax, mx + 0.016,
+                 exp_y + exp_h - 0.090 - li * 0.033,
+                 line, fs=5.8, c="#4A235A", va="top", z=4)
+
+    elif q["answered"] and "explanation" in q:
+
+        # ── Static correct-answer explanation ─────────────────────────────
         exp_y = 0.025
         exp_h = 0.150
         _rect(ax, mx, exp_y, mw, exp_h, "#EBF5FB", ec="#AED6F1",
@@ -264,18 +319,15 @@ def _draw_panel(ax, state, q, role_label, accent):
         _txt(ax, mx + 0.018, exp_y + exp_h - 0.020,
              "Explanation", fs=6.5, c="#154360", weight="bold", va="top", z=4)
 
-        # Wrap to ~60 chars
         words = q["explanation"].split()
         lines, cur = [], ""
         for w in words:
             if len(cur) + len(w) + 1 > 60:
-                lines.append(cur)
-                cur = w
+                lines.append(cur); cur = w
             else:
                 cur = (cur + " " + w).strip()
         if cur:
             lines.append(cur)
-
         for li, line in enumerate(lines[:3]):
             _txt(ax, mx + 0.018,
                  exp_y + exp_h - 0.048 - li * 0.036,
@@ -309,7 +361,7 @@ def main():
              linespacing=1.5)
     fig.text(0.748, 0.085,
              "Healthcare Provider View\n"
-             "Clinical terminology  |  Correct-answer feedback shown",
+             "Clinical terminology  |  Wrong answer \u2192 AI misconception feedback",
              ha="center", va="top", fontsize=7.5, color="#3D3D3D",
              linespacing=1.5)
 
