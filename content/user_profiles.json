@@ -1,0 +1,162 @@
+{
+  "_schema_version": "1.0",
+  "_description": "CEDAR-PKD user profile definitions for simulation and the Streamlit app.",
+  "_schema_notes": {
+    "simulation_profile": {
+      "id": "string — unique identifier",
+      "display_name": "string — human-readable label for figure annotations",
+      "role": "string — patient | physician",
+      "theta": "float — true latent ability on a standard normal scale (used to simulate IRT responses). Typical range -3 to +3.",
+      "theta_sd": "float — standard deviation for sampling; models within-profile variability across simulated users",
+      "n_simulated_users": "int — number of synthetic users to generate from this profile for the response matrix",
+      "initial_knowledge_state": "object — topic_area -> float (0-1), represents P(mastery) at session start before any questions",
+      "profile_color": "string — hex color (matches figures/style.py PROFILE_COLORS)",
+      "description": "string — brief narrative description for figure captions"
+    },
+    "demographic_profile": {
+      "id": "string",
+      "display_name": "string",
+      "role": "string — patient | physician",
+      "sex": "string — female | male | other | not_specified",
+      "disease_stage": "int 1-5 or null — CKD stage; null for physicians",
+      "family_planning": "bool — true if patient is considering pregnancy / reproductive planning",
+      "theta": "float — baseline ability (same scale as simulation profiles)",
+      "initial_knowledge_state": "object — topic_area -> float",
+      "profile_color": "string — hex color (matches figures/style.py DEMO_COLORS)",
+      "description": "string"
+    }
+  },
+
+  "simulation_profiles": [
+    {
+      "id": "newly_diagnosed_patient",
+      "display_name": "Newly Diagnosed Patient",
+      "role": "patient",
+      "theta": -1.5,
+      "theta_sd": 0.3,
+      "n_simulated_users": 25,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.10,
+        "adpkd_genetics": 0.05,
+        "adpkd_diagnosis": 0.08
+      },
+      "profile_color": "#4C9BE8",
+      "description": "Patient recently diagnosed with ADPKD; minimal prior knowledge across all topic areas. Representative of the majority of newly referred patients."
+    },
+    {
+      "id": "experienced_patient",
+      "display_name": "Experienced Patient",
+      "role": "patient",
+      "theta": 0.0,
+      "theta_sd": 0.3,
+      "n_simulated_users": 25,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.65,
+        "adpkd_genetics": 0.25,
+        "adpkd_diagnosis": 0.30
+      },
+      "profile_color": "#F4845F",
+      "description": "Patient living with ADPKD for several years; good grasp of symptoms and daily management but significant gaps in genetics and testing-related content."
+    },
+    {
+      "id": "primary_care_physician",
+      "display_name": "Primary Care Physician",
+      "role": "physician",
+      "theta": 1.0,
+      "theta_sd": 0.3,
+      "n_simulated_users": 25,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.70,
+        "adpkd_genetics": 0.30,
+        "adpkd_diagnosis": 0.35
+      },
+      "profile_color": "#56B29A",
+      "description": "Primary care physician with solid general medicine background but limited ADPKD-specific genetics training. Represents the 50%+ of PCPs who report insufficient genetics education."
+    },
+    {
+      "id": "nephrologist",
+      "display_name": "Nephrologist",
+      "role": "physician",
+      "theta": 1.8,
+      "theta_sd": 0.3,
+      "n_simulated_users": 25,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.90,
+        "adpkd_genetics": 0.60,
+        "adpkd_diagnosis": 0.55
+      },
+      "profile_color": "#9B72CF",
+      "description": "Nephrologist with strong kidney disease knowledge but notable gaps in ADPKD genetic testing interpretation and patient communication around reproductive options."
+    }
+  ],
+
+  "demographic_profiles": [
+    {
+      "id": "female_early_family_planning",
+      "display_name": "Female Patient — Early Stage, Family Planning",
+      "role": "patient",
+      "sex": "female",
+      "disease_stage": 2,
+      "family_planning": true,
+      "theta": -0.5,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.40,
+        "adpkd_genetics": 0.20,
+        "adpkd_diagnosis": 0.15
+      },
+      "profile_color": "#E85D8A",
+      "description": "28-year-old female patient, CKD Stage 2, recently confirmed ADPKD diagnosis, actively considering pregnancy. Needs focused content on reproductive options, inheritance risk, and sex-specific complications (liver cysts with estrogen). Represents the DOD Consumer Reviewer's concern about sex-tailored information."
+    },
+    {
+      "id": "male_advanced",
+      "display_name": "Male Patient — Advanced Stage",
+      "role": "patient",
+      "sex": "male",
+      "disease_stage": 4,
+      "family_planning": false,
+      "theta": 0.2,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.60,
+        "adpkd_genetics": 0.35,
+        "adpkd_diagnosis": 0.40
+      },
+      "profile_color": "#3D7EBF",
+      "description": "52-year-old male patient, CKD Stage 4, long-standing ADPKD diagnosis. Needs focused content on disease progression, kidney replacement therapy planning, living donor evaluation for relatives, and cascade testing for adult children. Tolvaptan is less relevant at this stage."
+    },
+    {
+      "id": "treating_physician",
+      "display_name": "Treating Physician",
+      "role": "physician",
+      "sex": "not_specified",
+      "disease_stage": null,
+      "family_planning": false,
+      "theta": 1.2,
+      "initial_knowledge_state": {
+        "kidney_basics": 0.80,
+        "adpkd_genetics": 0.45,
+        "adpkd_diagnosis": 0.50
+      },
+      "profile_color": "#56B29A",
+      "description": "Nephrologist or internist managing both of the above patients. Needs content on variant classification, cascade testing workflows, and counseling around reproductive options and sex-specific complications. Represents the physician audience for Figure 7's multi-audience path divergence."
+    }
+  ],
+
+  "bkt_default_params": {
+    "_description": "Default Bayesian Knowledge Tracing parameters per topic. These are the starting values used before any real user data updates them. Values sourced from published ALE literature.",
+    "kidney_basics": {
+      "p_learn":      0.30,
+      "p_guess":      0.20,
+      "p_slip":       0.10
+    },
+    "adpkd_genetics": {
+      "p_learn":      0.25,
+      "p_guess":      0.15,
+      "p_slip":       0.12
+    },
+    "adpkd_diagnosis": {
+      "p_learn":      0.28,
+      "p_guess":      0.18,
+      "p_slip":       0.11
+    }
+  }
+}

@@ -1,0 +1,645 @@
+{
+  "_schema_version": "1.0",
+  "_description": "CEDAR-PKD content data: modules and questions for the Adaptive Learning Engine prototype.",
+  "_schema_notes": {
+    "module": {
+      "id": "string — unique module identifier, e.g. 'mod_1_2'",
+      "title": "string — display title",
+      "topic_area": "string — one of: kidney_basics | adpkd_diagnosis | adpkd_genetics",
+      "learning_objectives": "array of strings — one per objective, written as 'Student will be able to...'",
+      "prerequisite_module_ids": "array of module id strings — empty if no prerequisites",
+      "estimated_time_minutes": "int — estimated time to complete module including questions",
+      "audience": "string — patient | physician | both"
+    },
+    "question": {
+      "id": "string — unique question identifier, e.g. 'q_1_2_01'",
+      "module_id": "string — parent module id",
+      "topic": "string — matches module topic_area",
+      "text": "string — full question text",
+      "correct_answer": "string — key into options dict",
+      "options": "object — keys A/B/C/D, values are answer text strings",
+      "explanation": "string — feedback shown after answering (correct or incorrect)",
+      "audience": "string — patient | physician | both",
+      "blooms_level": "string — remember | understand | apply",
+      "difficulty_prior": "float 0.0-1.0 — hand-assigned prior (low=easy, high=hard); seeded into 2PL IRT model",
+      "demographic_tags": {
+        "sex_specific": "bool — true if content differs by sex/gender",
+        "disease_stage_relevant": "array of ints 1-5 — CKD stages where this question is especially relevant; empty = all stages",
+        "family_planning_relevant": "bool — true if content relates to family planning / reproductive decisions"
+      },
+      "distractor_misconceptions": "object — keys match wrong option keys (e.g. 'B'), values are short misconception labels"
+    }
+  },
+
+  "modules": [
+    {
+      "id": "mod_1_2",
+      "title": "An Overview of ADPKD",
+      "topic_area": "kidney_basics",
+      "learning_objectives": [
+        "Define ADPKD and describe its prevalence (~1 in 1,000 lifetime risk)",
+        "Identify the primary genes associated with ADPKD (PKD1, PKD2 and five additional genes)",
+        "Describe the major complications of ADPKD beyond kidney failure",
+        "Explain why early diagnosis and genetic testing matter for ADPKD management",
+        "Distinguish ADPKD from other cystic kidney diseases"
+      ],
+      "prerequisite_module_ids": [],
+      "estimated_time_minutes": 10,
+      "audience": "both"
+    },
+    {
+      "id": "mod_1_3",
+      "title": "ADPKD Genetics",
+      "topic_area": "adpkd_genetics",
+      "learning_objectives": [
+        "Explain autosomal dominant inheritance and the 50% transmission risk",
+        "Name all seven ADPKD-associated genes and their relative frequency",
+        "Describe what a pathogenic variant means in the context of ADPKD",
+        "Explain the difference between PKD1 and PKD2 in terms of disease severity",
+        "Recognize that de novo variants account for a minority of ADPKD cases"
+      ],
+      "prerequisite_module_ids": ["mod_1_2"],
+      "estimated_time_minutes": 12,
+      "audience": "both"
+    },
+    {
+      "id": "mod_2_3",
+      "title": "Genetic Testing for ADPKD",
+      "topic_area": "adpkd_diagnosis",
+      "learning_objectives": [
+        "Identify clinical indications for ADPKD genetic testing",
+        "Explain what a genetic test report includes and how variants are classified",
+        "Describe implications of genetic testing for family members",
+        "Understand reproductive options available to individuals with ADPKD",
+        "Recognize barriers to genetic testing utilization and how to address them",
+        "Apply variant classification categories (pathogenic, likely pathogenic, VUS, etc.) to clinical scenarios"
+      ],
+      "prerequisite_module_ids": ["mod_1_2", "mod_1_3"],
+      "estimated_time_minutes": 15,
+      "audience": "both"
+    }
+  ],
+
+  "questions": [
+
+    {
+      "id": "q_1_2_01",
+      "module_id": "mod_1_2",
+      "topic": "kidney_basics",
+      "text": "Approximately how common is ADPKD in the general population?",
+      "correct_answer": "B",
+      "options": {
+        "A": "1 in 100 people",
+        "B": "1 in 1,000 people",
+        "C": "1 in 10,000 people",
+        "D": "1 in 100,000 people"
+      },
+      "explanation": "ADPKD affects approximately 1 in 1,000 people, making it one of the most common inherited kidney diseases worldwide. It is the fourth leading cause of end-stage renal disease.",
+      "audience": "both",
+      "blooms_level": "remember",
+      "difficulty_prior": 0.25,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "ADPKD is rarer than a 1-in-100 condition like hypertension",
+        "C": "ADPKD is more common than ultra-rare diseases; 1 in 10,000 understates its public health burden",
+        "D": "ADPKD is not an ultra-rare disease; underestimating prevalence reduces urgency for screening"
+      }
+    },
+
+    {
+      "id": "q_1_2_02",
+      "module_id": "mod_1_2",
+      "topic": "kidney_basics",
+      "text": "ADPKD is caused by pathogenic variants in which two primary genes?",
+      "correct_answer": "A",
+      "options": {
+        "A": "PKD1 and PKD2",
+        "B": "BRCA1 and BRCA2",
+        "C": "PKD1 and GANAB",
+        "D": "PKD2 and ALG9"
+      },
+      "explanation": "The two primary ADPKD genes are PKD1 (~78% of cases) and PKD2 (~15% of cases). Five additional genes — GANAB, DNAJB11, ALG5, ALG9, and IFT140 — account for a smaller proportion of cases.",
+      "audience": "both",
+      "blooms_level": "remember",
+      "difficulty_prior": 0.20,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "B": "Confusing ADPKD with hereditary breast/ovarian cancer syndrome",
+        "C": "GANAB is a minor ADPKD gene, not a primary one alongside PKD1",
+        "D": "ALG9 is a minor ADPKD gene; conflating minor and major genes"
+      }
+    },
+
+    {
+      "id": "q_1_2_03",
+      "module_id": "mod_1_2",
+      "topic": "kidney_basics",
+      "text": "Beyond kidney disease, which of the following is a recognized complication of ADPKD?",
+      "correct_answer": "C",
+      "options": {
+        "A": "Increased risk of lung cancer",
+        "B": "Early-onset type 2 diabetes",
+        "C": "Intracranial (brain) aneurysms",
+        "D": "Progressive hearing loss"
+      },
+      "explanation": "ADPKD is a systemic disease. Intracranial aneurysms occur in ~8% of ADPKD patients (higher than the general population) and are a cause of hemorrhagic stroke. Cystic liver disease and cardiac valve abnormalities are also recognized extra-renal complications.",
+      "audience": "both",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.45,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "ADPKD does not increase lung cancer risk; confusing multisystem disease with oncologic conditions",
+        "B": "Type 2 diabetes is not a feature of ADPKD; confusing metabolic with genetic kidney disease",
+        "D": "Hearing loss is associated with Alport syndrome, not ADPKD; confusing inherited kidney diseases"
+      }
+    },
+
+    {
+      "id": "q_1_2_04",
+      "module_id": "mod_1_2",
+      "topic": "kidney_basics",
+      "text": "Research shows that delayed ADPKD diagnosis is associated with which outcome?",
+      "correct_answer": "D",
+      "options": {
+        "A": "Faster cyst growth but no change in survival",
+        "B": "Reduced eligibility for tolvaptan treatment",
+        "C": "Greater likelihood of requiring dialysis before age 40",
+        "D": "Increased all-cause mortality"
+      },
+      "explanation": "Preliminary data from a cohort of 12,217 veterans with ADPKD showed that diagnostic delays greater than 10 years were associated with significantly increased all-cause mortality (HR 1.14, p=0.015), even after adjusting for age and kidney function. This underscores the urgency of early, accurate diagnosis.",
+      "audience": "both",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.50,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "Believing that diagnosis timing only affects cyst biology, not survival",
+        "B": "Tolvaptan eligibility is based on disease progression rate, not diagnosis timing per se",
+        "C": "While serious, early dialysis is not the primary mortality driver associated with diagnostic delay in the evidence"
+      }
+    },
+
+    {
+      "id": "q_1_2_05",
+      "module_id": "mod_1_2",
+      "topic": "kidney_basics",
+      "text": "Which of the following best describes why ADPKD affects kidney function over time?",
+      "correct_answer": "B",
+      "options": {
+        "A": "The kidneys become inflamed and scarred due to repeated infections",
+        "B": "Fluid-filled cysts grow progressively, replacing normal kidney tissue and reducing function",
+        "C": "The immune system attacks kidney cells, reducing their ability to filter blood",
+        "D": "Calcium deposits block the kidney tubules, preventing urine formation"
+      },
+      "explanation": "In ADPKD, mutations in PKD1 or PKD2 cause abnormal cell signaling that leads to cyst formation. Cysts grow over decades, physically compressing and replacing functional kidney tissue, ultimately reducing the kidney's ability to filter waste from the blood.",
+      "audience": "patient",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.30,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "Confusing ADPKD with chronic pyelonephritis or reflux nephropathy",
+        "C": "Confusing ADPKD with autoimmune kidney diseases like lupus nephritis",
+        "D": "Confusing ADPKD with nephrocalcinosis or obstructive uropathy"
+      }
+    },
+
+    {
+      "id": "q_1_2_06",
+      "module_id": "mod_1_2",
+      "topic": "kidney_basics",
+      "text": "A patient with ADPKD asks if their children will definitely develop the disease. What is the most accurate response?",
+      "correct_answer": "C",
+      "options": {
+        "A": "Yes, all children of an ADPKD patient will inherit the condition",
+        "B": "No, ADPKD skips generations so children are typically unaffected",
+        "C": "Each child has a 50% chance of inheriting the pathogenic variant",
+        "D": "Only male children are at risk of inheriting ADPKD"
+      },
+      "explanation": "ADPKD follows autosomal dominant inheritance. Each pregnancy has a 50% probability of inheriting the pathogenic variant, regardless of sex. It does not skip generations — an affected parent has a 50/50 chance of passing it on with each child.",
+      "audience": "patient",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.35,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Believing autosomal dominant means 100% transmission rather than 50%",
+        "B": "Confusing autosomal dominant with recessive inheritance patterns that can skip generations",
+        "D": "Confusing autosomal dominant with X-linked inheritance"
+      }
+    },
+
+    {
+      "id": "q_1_3_01",
+      "module_id": "mod_1_3",
+      "topic": "adpkd_genetics",
+      "text": "In autosomal dominant inheritance, what does 'dominant' mean?",
+      "correct_answer": "A",
+      "options": {
+        "A": "Only one copy of the pathogenic variant is needed to cause the disease",
+        "B": "Both copies of the gene must carry the variant for disease to occur",
+        "C": "The variant is located on the dominant X chromosome",
+        "D": "The disease is more severe in dominant individuals in the family"
+      },
+      "explanation": "Dominant means that a single pathogenic variant in one copy of the gene is sufficient to cause disease. This contrasts with recessive conditions (like autosomal recessive PKD) where two pathogenic variants — one in each copy — are required.",
+      "audience": "patient",
+      "blooms_level": "remember",
+      "difficulty_prior": 0.20,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "B": "Confusing autosomal dominant with autosomal recessive inheritance",
+        "C": "Confusing 'dominant' in genetics with chromosomal location",
+        "D": "Misinterpreting 'dominant' as a social or clinical hierarchy term"
+      }
+    },
+
+    {
+      "id": "q_1_3_02",
+      "module_id": "mod_1_3",
+      "topic": "adpkd_genetics",
+      "text": "Which ADPKD gene is associated with more severe disease and earlier onset of kidney failure?",
+      "correct_answer": "A",
+      "options": {
+        "A": "PKD1",
+        "B": "PKD2",
+        "C": "GANAB",
+        "D": "IFT140"
+      },
+      "explanation": "PKD1 variants generally produce a more severe phenotype, with median age of ESRD around 58 years versus ~79 years for PKD2 variants. This genotype-phenotype correlation has clinical implications for risk stratification and treatment decisions.",
+      "audience": "physician",
+      "blooms_level": "remember",
+      "difficulty_prior": 0.30,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [3, 4, 5],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "B": "Reversing the PKD1/PKD2 severity relationship",
+        "C": "GANAB variants cause a milder, predominantly hepatic cystic phenotype",
+        "D": "IFT140 is associated with a milder phenotype often with extra-renal features"
+      }
+    },
+
+    {
+      "id": "q_1_3_03",
+      "module_id": "mod_1_3",
+      "topic": "adpkd_genetics",
+      "text": "If a patient has ADPKD but neither parent has the disease, what is the most likely explanation?",
+      "correct_answer": "B",
+      "options": {
+        "A": "The patient actually has autosomal recessive PKD, not ADPKD",
+        "B": "The patient has a de novo (new) pathogenic variant that was not inherited from either parent",
+        "C": "One parent must be a carrier but shows no symptoms due to incomplete penetrance",
+        "D": "Environmental factors caused the patient to develop ADPKD without a genetic cause"
+      },
+      "explanation": "De novo variants — new mutations arising for the first time in the patient rather than being inherited — account for approximately 5-10% of ADPKD cases. This explains cases where neither parent is affected. ADPKD has essentially complete penetrance, so an affected parent would typically show symptoms.",
+      "audience": "physician",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.65,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Assuming negative family history rules out ADPKD rather than de novo variants",
+        "C": "ADPKD has near-complete penetrance; incomplete penetrance is not the primary explanation",
+        "D": "Believing environmental exposures alone can cause ADPKD without genetic variants"
+      }
+    },
+
+    {
+      "id": "q_1_3_04",
+      "module_id": "mod_1_3",
+      "topic": "adpkd_genetics",
+      "text": "Which of the following is true about the seven genes associated with ADPKD?",
+      "correct_answer": "D",
+      "options": {
+        "A": "All seven genes produce equally severe disease",
+        "B": "Variants in GANAB and DNAJB11 are the most common cause of ADPKD",
+        "C": "Only PKD1 and PKD2 have been validated as ADPKD genes; the others are under investigation",
+        "D": "PKD1 and PKD2 account for the large majority of cases; the remaining five genes are less common"
+      },
+      "explanation": "PKD1 accounts for ~78% and PKD2 for ~15% of ADPKD cases. GANAB, DNAJB11, ALG5, ALG9, and IFT140 are validated ADPKD genes but account for a minority of cases and are often associated with milder or atypical presentations.",
+      "audience": "physician",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.40,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "Assuming all ADPKD genes produce the same severity",
+        "B": "Overestimating the frequency of minor ADPKD genes",
+        "C": "Underestimating the current evidence base for the five additional ADPKD genes"
+      }
+    },
+
+    {
+      "id": "q_1_3_05",
+      "module_id": "mod_1_3",
+      "topic": "adpkd_genetics",
+      "text": "A patient with ADPKD and a PKD2 variant asks how their prognosis compares to a friend who has a PKD1 variant. What is the most accurate statement?",
+      "correct_answer": "C",
+      "options": {
+        "A": "Their prognosis is identical — gene type does not affect ADPKD outcomes",
+        "B": "They will progress faster because PKD2 variants cause more rapid cyst growth",
+        "C": "They will likely have a slower disease course, with later onset of kidney failure than their friend",
+        "D": "Both genes have the same kidney outcomes, but PKD2 is associated with worse liver disease"
+      },
+      "explanation": "PKD2 variants are associated with a milder disease course, with median ESRD around age 79 compared to ~58 for PKD1. This genotype-phenotype information is directly relevant to clinical counseling and treatment decisions such as tolvaptan eligibility.",
+      "audience": "both",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.55,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [1, 2, 3],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "Believing gene type has no prognostic significance for ADPKD",
+        "B": "Reversing the PKD1/PKD2 severity direction",
+        "D": "Confusing hepatic cystic disease severity between PKD1 and PKD2"
+      }
+    },
+
+    {
+      "id": "q_1_3_06",
+      "module_id": "mod_1_3",
+      "topic": "adpkd_genetics",
+      "text": "Why is genetic testing important even for patients who already have an imaging-based ADPKD diagnosis?",
+      "correct_answer": "B",
+      "options": {
+        "A": "Genetic testing can reverse the diagnosis if imaging was incorrect",
+        "B": "Knowing the specific gene and variant helps with prognosis, treatment decisions, and family planning",
+        "C": "Genetic testing is required by law before prescribing tolvaptan",
+        "D": "Imaging cannot distinguish ADPKD from other cystic kidney diseases, so genetic testing is always needed first"
+      },
+      "explanation": "Even with an established imaging diagnosis, genetic testing adds value by identifying the specific gene (PKD1 vs PKD2 affects prognosis), the variant class (pathogenic vs VUS affects confidence), informing tolvaptan eligibility, enabling cascade testing of family members, and supporting reproductive decision-making.",
+      "audience": "both",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.60,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [1, 2, 3],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Thinking genetic testing is only useful for confirming or reversing an uncertain diagnosis",
+        "C": "Overstating legal requirements; tolvaptan eligibility is based on clinical criteria, not genetic testing mandate",
+        "D": "Overstating imaging ambiguity; imaging can diagnose ADPKD but genetic testing adds layered value"
+      }
+    },
+
+    {
+      "id": "q_2_3_01",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "Which of the following patients has the strongest indication for ADPKD genetic testing?",
+      "correct_answer": "C",
+      "options": {
+        "A": "A 70-year-old with bilateral kidney cysts and no family history",
+        "B": "A patient with unilateral cysts found incidentally during abdominal imaging",
+        "C": "A 28-year-old considering pregnancy whose parent has ADPKD but imaging is inconclusive",
+        "D": "A patient with ESRD already on dialysis with no genetic testing interest"
+      },
+      "explanation": "Genetic testing is most impactful when results will change clinical management. A young patient considering pregnancy whose parent has ADPKD has the highest stakes: confirming or ruling out the familial variant has direct implications for their own care, prenatal testing, and preimplantation genetic diagnosis options.",
+      "audience": "physician",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.55,
+      "demographic_tags": {
+        "sex_specific": true,
+        "disease_stage_relevant": [1, 2],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Simple cysts are common in older adults and do not necessarily indicate ADPKD",
+        "B": "Unilateral incidental cysts have many benign causes and do not strongly indicate ADPKD",
+        "D": "At ESRD, genetic testing has less immediate impact on clinical management"
+      }
+    },
+
+    {
+      "id": "q_2_3_02",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "A genetic test report returns a result of 'Variant of Uncertain Significance (VUS)' in PKD1. What does this mean for the patient?",
+      "correct_answer": "B",
+      "options": {
+        "A": "The variant is definitely causing the patient's ADPKD",
+        "B": "There is not yet enough evidence to classify the variant as pathogenic or benign",
+        "C": "The variant is benign and can be ignored clinically",
+        "D": "The patient should immediately start tolvaptan because all PKD1 variants are pathogenic"
+      },
+      "explanation": "A VUS means the laboratory has insufficient evidence to classify the variant as either disease-causing or benign. VUSes should not be used to make clinical decisions. They may be reclassified as more evidence accumulates, so patients and families should be re-contacted if reclassification occurs.",
+      "audience": "both",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.50,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Treating a VUS as equivalent to a pathogenic variant",
+        "C": "Treating a VUS as benign and dismissing it",
+        "D": "Using variant presence alone to justify treatment without pathogenicity confirmation"
+      }
+    },
+
+    {
+      "id": "q_2_3_03",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "A patient with confirmed ADPKD (PKD1 pathogenic variant) has two adult siblings who have never been tested. What is the recommended approach?",
+      "correct_answer": "D",
+      "options": {
+        "A": "Siblings do not need testing unless they develop symptoms",
+        "B": "Siblings should have imaging only; genetic testing is not useful for cascade testing",
+        "C": "Only female siblings should be tested due to higher ADPKD risk in women",
+        "D": "Cascade genetic testing should be offered to all first-degree relatives who wish to know their status"
+      },
+      "explanation": "Cascade genetic testing — offering targeted testing for the known familial variant to at-risk relatives — is a key benefit of ADPKD genetic testing. Each sibling has a 50% probability of carrying the variant. Early identification allows pre-symptomatic monitoring, lifestyle modifications, and informed reproductive planning.",
+      "audience": "both",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.55,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Waiting for symptoms before testing misses the opportunity for early intervention",
+        "B": "Targeted variant testing is efficient and actionable for cascade testing; dismissing its value",
+        "C": "ADPKD risk is equal for males and females (autosomal, not X-linked)"
+      }
+    },
+
+    {
+      "id": "q_2_3_04",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "Which of the following is a known barrier to genetic testing utilization among nephrologists, based on survey evidence?",
+      "correct_answer": "A",
+      "options": {
+        "A": "Insufficient training in genetics and uncertainty about how to interpret test results",
+        "B": "Lack of available genetic tests for ADPKD genes",
+        "C": "Patient refusal of genetic testing in the majority of cases",
+        "D": "Insurance covering genetic testing prevents ordering due to prior authorization burden"
+      },
+      "explanation": "Surveys of nephrologists show that over 50% report insufficient training in genetics, and that lower genetics education is associated with fewer genetic referrals. Nearly one-third of nephrologists report not using genetic testing despite clinical indications. Educational resources are consistently cited as a top unmet need.",
+      "audience": "physician",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.45,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "B": "Genetic tests for all seven ADPKD genes are commercially available",
+        "C": "Patient acceptance of testing is generally higher than physician ordering rates",
+        "D": "While insurance issues exist, the primary barrier identified in surveys is physician education"
+      }
+    },
+
+    {
+      "id": "q_2_3_05",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "A young woman with ADPKD wants to have children but does not want to pass the condition on. Which reproductive option can help achieve this?",
+      "correct_answer": "C",
+      "options": {
+        "A": "Choosing adoption is the only way to avoid passing ADPKD to children",
+        "B": "ADPKD is too unpredictable for reproductive planning to be useful",
+        "C": "Preimplantation genetic testing (PGT) during IVF can identify embryos without the ADPKD variant",
+        "D": "Prenatal testing can detect ADPKD but results cannot be used to change the pregnancy outcome"
+      },
+      "explanation": "Preimplantation genetic testing (PGT) involves genetic testing of embryos created through IVF before implantation. Embryos without the pathogenic variant can be selected for transfer, allowing the patient to have a biological child without ADPKD. Prenatal testing (CVS or amniocentesis) is also available for established pregnancies.",
+      "audience": "patient",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.60,
+      "demographic_tags": {
+        "sex_specific": true,
+        "disease_stage_relevant": [1, 2],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "A": "Unaware of reproductive genetic technologies that allow biological parenthood",
+        "B": "Fatalism about ADPKD genetics limiting reproductive options",
+        "D": "Misunderstanding the scope of prenatal genetic testing options"
+      }
+    },
+
+    {
+      "id": "q_2_3_06",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "How are variants in ADPKD genes typically classified on a genetic test report?",
+      "correct_answer": "B",
+      "options": {
+        "A": "As either 'positive' or 'negative' with no further detail",
+        "B": "Using a five-tier system: Pathogenic, Likely Pathogenic, Variant of Uncertain Significance, Likely Benign, or Benign",
+        "C": "By severity score from 1–10 based on predicted protein damage",
+        "D": "As 'high risk' or 'low risk' using a proprietary algorithm specific to each testing laboratory"
+      },
+      "explanation": "The ACMG-AMP guidelines provide a standardized five-tier classification: Pathogenic (P), Likely Pathogenic (LP), Variant of Uncertain Significance (VUS), Likely Benign (LB), and Benign (B). P and LP variants are considered clinically actionable; VUS should not drive clinical decisions; LB and B are not considered disease-causing.",
+      "audience": "both",
+      "blooms_level": "remember",
+      "difficulty_prior": 0.40,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "Oversimplifying classification to a binary positive/negative result",
+        "C": "Confusing ACMG-AMP classification with computational prediction scores like SIFT or PolyPhen",
+        "D": "Believing variant classification is non-standardized and laboratory-specific"
+      }
+    },
+
+    {
+      "id": "q_2_3_07",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "A male patient with ADPKD is CKD Stage 4. He asks whether genetic testing is still useful at this stage. Which is most accurate?",
+      "correct_answer": "D",
+      "options": {
+        "A": "Genetic testing is not useful at CKD Stage 4 because treatment options are limited",
+        "B": "Genetic testing should be done urgently to qualify for tolvaptan before dialysis",
+        "C": "Genetic testing will determine whether the patient needs a kidney transplant",
+        "D": "Genetic testing can still benefit family members and inform transplant donor evaluation from relatives"
+      },
+      "explanation": "Even at advanced CKD, genetic testing provides value for cascade testing of at-risk relatives, informing living donor evaluation (a relative who carries the same variant may not be an appropriate kidney donor), and providing prognostic clarity. Tolvaptan is generally indicated for earlier-stage patients at risk of rapid progression.",
+      "audience": "physician",
+      "blooms_level": "apply",
+      "difficulty_prior": 0.70,
+      "demographic_tags": {
+        "sex_specific": false,
+        "disease_stage_relevant": [4, 5],
+        "family_planning_relevant": false
+      },
+      "distractor_misconceptions": {
+        "A": "Assuming advanced disease makes genetic testing irrelevant",
+        "B": "Misunderstanding tolvaptan indication; it is for earlier-stage, rapidly progressing patients",
+        "C": "Conflating genetic diagnosis with transplant listing decisions"
+      }
+    },
+
+    {
+      "id": "q_2_3_08",
+      "module_id": "mod_2_3",
+      "topic": "adpkd_diagnosis",
+      "text": "ADPKD disproportionately affects women in one specific complication. Which is it?",
+      "correct_answer": "A",
+      "options": {
+        "A": "Liver cysts (polycystic liver disease) are more severe and symptomatic in women, especially those who have been pregnant or used oral contraceptives",
+        "B": "Women with ADPKD progress to kidney failure significantly faster than men",
+        "C": "Intracranial aneurysms occur exclusively in women with ADPKD",
+        "D": "ADPKD-related hypertension is more common and severe in women"
+      },
+      "explanation": "Polycystic liver disease is a well-recognized sex-specific complication of ADPKD: women, particularly those with a history of pregnancy or exogenous estrogen use, develop larger and more symptomatic hepatic cysts. This is clinically important for counseling women with ADPKD considering pregnancy or hormonal contraception.",
+      "audience": "both",
+      "blooms_level": "understand",
+      "difficulty_prior": 0.65,
+      "demographic_tags": {
+        "sex_specific": true,
+        "disease_stage_relevant": [],
+        "family_planning_relevant": true
+      },
+      "distractor_misconceptions": {
+        "B": "Men and women progress to kidney failure at similar rates overall (men may progress slightly faster)",
+        "C": "Intracranial aneurysms affect both sexes with ADPKD; not exclusive to women",
+        "D": "Hypertension is common in ADPKD in both sexes and typically appears before significant kidney decline"
+      }
+    }
+  ]
+}
