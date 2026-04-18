@@ -238,6 +238,24 @@ def main():
         ]
         ax.legend(handles=handles, fontsize=6.5, loc="upper left", framealpha=0.85)
 
+        # Explanation annotation for newly diagnosed patient
+        if pid == "newly_diagnosed_patient":
+            ax.text(
+                0.97, 0.97,
+                "\u2020  Why adaptive lags early (low \u03b8 = \u22121.5):\n"
+                "At very low ability all 3 topics start\n"
+                "equally weak, so the recommender spreads\n"
+                "items across them proportionally. Static\n"
+                "bank order clusters Module 1 first \u2014\n"
+                "reaching 1-topic mastery sooner by chance.\n"
+                "Adaptive catches up as topic gaps diverge.",
+                transform=ax.transAxes,
+                fontsize=5.5, color=color,
+                ha="right", va="top", linespacing=1.45,
+                bbox=dict(boxstyle="round,pad=0.28", facecolor="white",
+                          edgecolor=color, alpha=0.90, linewidth=0.7),
+            )
+
     fig.suptitle(
         "Figure 6 — Adaptive vs. Static Knowledge Gain\n"
         "Cumulative topics mastered per learner profile  "

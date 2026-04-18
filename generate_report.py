@@ -701,6 +701,24 @@ def page_fig6():
         "Across the three clinical profiles that reach full mastery within the session, "
         "adaptive ordering achieves mastery 3\u20138 interactions sooner than static "
         "\u2014 a meaningful efficiency gain in a clinical education context.")
+
+    y = _para(ax, ML, y,
+        "The newly diagnosed patient (\u03b8 = \u22121.5, top-left panel) is the one "
+        "profile where the adaptive curve takes longest to cross above the static curve. "
+        "This is mechanistically expected, not a failure of the recommender. "
+        "At very low ability, all three topics begin with similarly low mastery, "
+        "so the recommender\u2019s scoring function \u2014 "
+        "(1 \u2212 P(mastery)) \u00d7 discrimination \u2014 assigns comparable scores "
+        "to items from every topic and distributes selections roughly evenly across all "
+        "three. The static ordering follows fixed bank order, which clusters Module 1 "
+        "(Kidney Basics) questions in the first several interactions; by chance this "
+        "front-loading pushes one topic past the 80\u202f\u0025 threshold sooner. "
+        "For higher-ability learners (\u03b8 \u2265 0), mastery states diverge quickly "
+        "and the recommender\u2019s targeting immediately identifies the highest-priority "
+        "topic \u2014 explaining why the adaptive advantage appears earlier in those panels. "
+        "The newly diagnosed patient\u2019s advantage is therefore back-loaded: adaptive "
+        "closes all gaps simultaneously rather than sequentially, and the shaded region "
+        "widens as the session progresses.")
     y -= 0.10
 
     fig6_h = 7.20
