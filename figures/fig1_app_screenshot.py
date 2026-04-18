@@ -39,7 +39,7 @@ SIDEBAR_BG    = "#F4F6F7"
 PANEL_BG      = "#FFFFFF"
 BORDER        = "#D5D8DC"
 TEXT_MAIN     = "#1A1A2E"
-TEXT_MUTED    = "#7F8C8D"
+TEXT_MUTED    = "#566573"
 
 MASTERY_ON    = "#27AE60"   # green  — mastered
 MASTERY_OFF   = "#2980B9"   # blue   — in progress
@@ -187,7 +187,7 @@ def _draw_panel(ax, state, q, role_label, accent):
     topics    = ["kidney_basics", "adpkd_genetics", "adpkd_diagnosis"]
     bar_top   = 0.800
     bar_h     = 0.038
-    bar_gap   = 0.085
+    bar_gap   = 0.095
     bar_x     = 0.030
     bar_w     = sb_w - 0.065
 
@@ -247,7 +247,7 @@ def _draw_panel(ax, state, q, role_label, accent):
         elif key == q["correct_key"]:
             fc, ec, tc = BTN_CORRECT, EDGE_CORRECT, "#1A5C30"
         else:
-            fc, ec, tc = BTN_NEUTRAL, EDGE_NORMAL, TEXT_MUTED
+            fc, ec, tc = BTN_NEUTRAL, "#BBBFC0", TEXT_MUTED
 
         _rect(ax, mx, by, mw, btn_h, fc, ec=ec, lw=0.9, r=0.012, z=3)
         _txt(ax, mx + 0.018, by + btn_h / 2,

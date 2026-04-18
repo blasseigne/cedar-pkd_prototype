@@ -96,10 +96,10 @@ def _label(ax, x, y, text, size=8, color="#1A1A2E", weight="normal",
 def main():
     apply_cedar_style()
 
-    fig, ax = plt.subplots(figsize=(7.0, 5.2))
+    fig, ax = plt.subplots(figsize=(7.0, 5.6))
     ax.axis("off")
     ax.set_xlim(0, 7.0)
-    ax.set_ylim(0, 5.2)
+    ax.set_ylim(0, 5.6)
     fig.patch.set_facecolor("white")
 
     # ══════════════════════════════════════════════════════════════════════
@@ -107,7 +107,7 @@ def main():
     # ══════════════════════════════════════════════════════════════════════
     gap_w, gap_h = 3.6, 0.58
     gap_x = (7.0 - gap_w) / 2
-    gap_y = 4.30
+    gap_y = 4.55
 
     _box(ax, gap_x, gap_y, gap_w, gap_h,
          fc=GAP_LIGHT, ec=GAP_COLOR, lw=1.8)
@@ -221,18 +221,17 @@ def main():
            size=6.8, color="#7D3C00")
 
     # ══════════════════════════════════════════════════════════════════════
-    # Figure title
+    # Figure title — placed outside axes via suptitle so it never overlaps
     # ══════════════════════════════════════════════════════════════════════
-    ax.text(
-        3.5, 5.12,
+    fig.suptitle(
         "Figure 8 — CEDAR-PKD vs. BIRCH-PKD: Complementary but Distinct Tools\n"
         "BIRCH fills known unknowns (reactive Q&A); CEDAR fills unknown unknowns "
         "(proactive adaptive curriculum). Neither alone is sufficient.",
-        ha="center", va="top", fontsize=7.5, fontweight="bold",
-        color="#1A1A2E", linespacing=1.4, zorder=6,
+        ha="center", fontsize=7.5, fontweight="bold",
+        color="#1A1A2E", linespacing=1.4, y=0.99,
     )
 
-    plt.tight_layout(pad=0.05)
+    plt.tight_layout(pad=0.3)
     save_figure(fig, "fig8_cedar_birch")
     plt.close(fig)
     print("Figure 8 complete.")

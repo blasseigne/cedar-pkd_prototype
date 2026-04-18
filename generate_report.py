@@ -817,6 +817,14 @@ def page_fig8():
         "Figure 8 shows that the two tools are complementary \u2014 not redundant "
         "\u2014 because they address fundamentally different types of knowledge gaps.")
 
+    y = _para(ax, ML, y,
+        "The purple box at the top of the schematic represents the shared problem "
+        "driver: ADPKD knowledge gaps in patients and clinicians (delayed diagnosis, "
+        "limited genetics literacy, low genetic-testing utilisation). Arrows flowing "
+        "downward from it to both BIRCH and CEDAR illustrate that both tools are "
+        "responses to this same underlying challenge. The purple colour signals a "
+        "problem shared by the two distinct solutions shown below it.")
+
     col_w = (CW - 0.20) / 2
     col_data = [
         ("BIRCH-PKD", GREEN, [
