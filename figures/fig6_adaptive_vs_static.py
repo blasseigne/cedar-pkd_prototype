@@ -2,11 +2,10 @@
 figures/fig6_adaptive_vs_static.py
 Figure 6 — Adaptive vs. Static Knowledge Gain Comparison
 
-Single panel showing cumulative topics mastered (P(mastery) ≥ 0.80) across
-20 interactions for all four simulation profiles.  Each profile is shown as
-two curves:
+2×2 small-multiples layout — one panel per learner profile.  Each panel shows:
   • Solid line   — CEDAR-PKD adaptive ordering (recommender-selected)
   • Dashed line  — Static ordering (fixed sequence through question bank)
+  • Shaded area  — adaptive advantage gap between the two curves
 
 Same learner theta, same IRT-simulated responses per item, different ordering.
 Demonstrates that adaptive sequencing accelerates mastery relative to static
@@ -155,6 +154,14 @@ def _static_order(profile, questions):
     return [q for q in questions if _is_eligible(q, profile)][:N_ITEMS]
 
 
+PROFILE_LABELS = {
+    "newly_diagnosed_patient": "Newly Diagnosed Patient",
+    "experienced_patient":     "Experienced Patient",
+    "primary_care_physician":  "Primary Care Physician",
+    "nephrologist":            "Nephrologist",
+}
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -183,76 +190,59 @@ def main():
         for _, row in irt_df.iterrows()
     }
 
-    # ── Build figure ──────────────────────────────────────────────────────
-    fig, ax = plt.subplots(figsize=FIG_DOUBLE)
+    # ── Build figure — 2×2 small multiples ───────────────────────────────
+    fig, axes = plt.subplots(2, 2, figsize=(7.0, 5.5), sharey=True)
+    axes_flat = axes.flatten()
 
-    for pid in PROFILE_ORDER:
-        profile       = profiles[pid]
-        color         = PROFILE_COLORS[pid]
-        initial_state = profile["initial_knowledge_state"]
+    for idx, pid in enumerate(PROFILE_ORDER):
+        ax      = axes_flat[idx]
+        profile = profiles[pid]
+        color   = PROFILE_COLORS[pid]
+        init    = profile["initial_knowledge_state"]
 
-        pre_resps     = _pre_generate_responses(profile, questions, irt_dict)
+        pre_resps   = _pre_generate_responses(profile, questions, irt_dict)
+        adap_qs     = _adaptive_order(profile, questions, irt_dict, init, bkt_params, pre_resps)
+        adap_counts = _run_session(adap_qs, pre_resps, init, bkt_params)
+        stat_qs     = _static_order(profile, questions)
+        stat_counts = _run_session(stat_qs, pre_resps, init, bkt_params)
 
-        # Adaptive
-        adap_qs       = _adaptive_order(profile, questions, irt_dict,
-                                        initial_state, bkt_params, pre_resps)
-        adap_counts   = _run_session(adap_qs, pre_resps, initial_state, bkt_params)
+        x_a = list(range(1, len(adap_counts) + 1))
+        x_s = list(range(1, len(stat_counts) + 1))
+        n   = min(len(adap_counts), len(stat_counts))
 
-        # Static
-        stat_qs       = _static_order(profile, questions)
-        stat_counts   = _run_session(stat_qs, pre_resps, initial_state, bkt_params)
+        # Shaded adaptive advantage
+        ax.fill_between(range(1, n + 1), adap_counts[:n], stat_counts[:n],
+                        alpha=0.12, color=color)
 
-        x_adap = list(range(1, len(adap_counts) + 1))
-        x_stat = list(range(1, len(stat_counts) + 1))
+        ax.plot(x_s, stat_counts, color=color, linestyle="--", linewidth=1.5,
+                alpha=0.7, label="Static")
+        ax.plot(x_a, adap_counts, color=color, linestyle="-",  linewidth=2.2,
+                label="Adaptive")
 
-        ax.plot(x_adap, adap_counts,
-                color=color, linestyle="-",  linewidth=2.0,
-                label=f"{profile['display_name']} — Adaptive")
-        ax.plot(x_stat, stat_counts,
-                color=color, linestyle="--", linewidth=1.5, alpha=0.65,
-                label=f"{profile['display_name']} — Static")
+        # Full-mastery reference line
+        ax.axhline(3, color=GRAY_DARK, linestyle=":", linewidth=0.7, alpha=0.5)
 
-    # Reference line at full mastery
-    ax.axhline(3, color=GRAY_DARK, linestyle=":", linewidth=0.8, alpha=0.6)
-    ax.text(0.98, 3.06, "All 3 topics mastered",
-            transform=ax.get_yaxis_transform(),
-            ha="right", va="bottom", fontsize=6, color=GRAY_DARK)
+        ax.set_title(PROFILE_LABELS[pid], fontsize=8.5, fontweight="bold",
+                     color=color, pad=4)
+        ax.set_ylim(-0.15, 3.4)
+        ax.set_yticks([0, 1, 2, 3])
+        ax.set_xlim(0.5, max(len(adap_counts), len(stat_counts)) + 0.5)
+        ax.set_xlabel("Interaction #", fontsize=7.5)
+        if idx % 2 == 0:
+            ax.set_ylabel("Topics Mastered  (P >= 80%)", fontsize=7.5)
 
-    ax.set_xlim(0.5, 17.5)
-    ax.set_ylim(-0.1, 3.4)
-    ax.set_yticks([0, 1, 2, 3])
-    ax.set_yticklabels(["0", "1", "2", "3"])
-    ax.set_xlabel("Interaction Number", fontsize=8)
-    ax.set_ylabel("Topics Mastered  (P ≥ 80%)", fontsize=8)
-    ax.set_title(
+        # Per-panel legend
+        handles = [
+            mlines.Line2D([], [], color=color, lw=2.2, ls="-",  label="Adaptive (CEDAR-PKD)"),
+            mlines.Line2D([], [], color=color, lw=1.5, ls="--", alpha=0.7, label="Static (fixed order)"),
+        ]
+        ax.legend(handles=handles, fontsize=6.5, loc="upper left", framealpha=0.85)
+
+    fig.suptitle(
         "Figure 6 — Adaptive vs. Static Knowledge Gain\n"
-        "Cumulative topics mastered across 20 interactions  "
-        "(solid = adaptive CEDAR-PKD,  dashed = static ordering)",
-        fontsize=9, fontweight="bold",
-    )
-
-    # ── Custom legend: profile colours + line-style legend ────────────────
-    profile_patches = [
-        mpatches.Patch(color=PROFILE_COLORS[pid],
-                       label=profiles[pid]["display_name"])
-        for pid in PROFILE_ORDER
-    ]
-    style_lines = [
-        mlines.Line2D([], [], color="black", linestyle="-",  linewidth=1.5,
-                      label="Adaptive (CEDAR-PKD)"),
-        mlines.Line2D([], [], color="black", linestyle="--", linewidth=1.2,
-                      alpha=0.7, label="Static (fixed order)"),
-    ]
-
-    leg1 = ax.legend(
-        handles=profile_patches,
-        loc="upper left", fontsize=7, framealpha=0.9,
-        title="Learner Profile", title_fontsize=7,
-    )
-    ax.add_artist(leg1)
-    ax.legend(
-        handles=style_lines,
-        loc="lower right", fontsize=7, framealpha=0.9,
+        "Cumulative topics mastered per learner profile  "
+        "(shaded area = adaptive advantage)",
+        fontsize=9, fontweight="bold", y=1.01,
     )
 
     plt.tight_layout()
