@@ -16,6 +16,7 @@ Output
 
 import os
 import textwrap
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.backends.backend_pdf import PdfPages
@@ -129,10 +130,32 @@ def _caption(ax, x, y, text, width=None, size=7.5):
         y -= 0.132
     return y - 0.04
 
-def _fig_embed(fig, img_path, left_in, bottom_in, w_in, h_in):
+def _fig_embed(fig, img_path, left_in, bottom_in, w_in, h_in, crop=False):
+    """Embed a PNG at absolute inch positions on the page.
+    If crop=True, auto-strip white borders from the image before embedding
+    so the content (not the matplotlib padding) fills the allocated area."""
     if not os.path.exists(img_path):
         return
-    img = mpimg.imread(img_path)
+    img = mpimg.imread(img_path)          # float32 RGBA or RGB, range [0,1]
+
+    if crop:
+        # Build a mask of pixels that are NOT near-white
+        if img.ndim == 3 and img.shape[2] == 4:
+            # RGBA: use alpha channel as additional mask
+            near_white = (img[:, :, :3] > 0.96).all(axis=2) & (img[:, :, 3] > 0.5)
+        else:
+            near_white = (img[:, :, :3] > 0.96).all(axis=2)
+        content = ~near_white
+        rows = np.where(content.any(axis=1))[0]
+        cols = np.where(content.any(axis=0))[0]
+        if rows.size and cols.size:
+            pad = 8  # pixels of breathing room
+            r0 = max(0,              rows[0]  - pad)
+            r1 = min(img.shape[0],   rows[-1] + pad + 1)
+            c0 = max(0,              cols[0]  - pad)
+            c1 = min(img.shape[1],   cols[-1] + pad + 1)
+            img = img[r0:r1, c0:c1]
+
     iax = fig.add_axes([left_in/PW, bottom_in/PH, w_in/PW, h_in/PH])
     iax.imshow(img, aspect="auto", interpolation="lanczos")
     iax.axis("off")
@@ -484,9 +507,9 @@ def page_fig3_fig4():
     y = _running_header(ax)
     y = _section(ax, ML, y, "Item Calibration Table & Learning Objectives Taxonomy")
 
-    # Use full page width for figures (narrow side margins only)
-    FIG_X = 0.20          # left edge for figures
-    FIG_W = PW - 0.40     # 8.10 inches — full bleed minus tiny margins
+    # True full-page-width figures — crop=True strips internal matplotlib whitespace
+    FIG_X = 0.0        # flush to page left edge
+    FIG_W = PW         # 8.5 inches — full page width
 
     y = _subsection(ax, ML, y, "Figure 3 \u2014 Item Parameter Table")
     y = _para(ax, ML, y,
@@ -495,9 +518,9 @@ def page_fig3_fig4():
         "item calibration detail and evidence of demographic variable incorporation.")
     y -= 0.06
 
-    fig3_h = 3.60
+    fig3_h = 3.70
     fig3_y = y - fig3_h
-    _fig_embed(fig, _FIG("fig3_item_params"), FIG_X, fig3_y, FIG_W, fig3_h)
+    _fig_embed(fig, _FIG("fig3_item_params"), FIG_X, fig3_y, FIG_W, fig3_h, crop=True)
     y = fig3_y - 0.04
     _caption(ax, ML, y,
         "Figure 3. Calibrated item parameter table showing question ID, module, "
@@ -516,9 +539,9 @@ def page_fig3_fig4():
         "taxonomy linked to item psychometrics.")
     y -= 0.06
 
-    fig4_h = 3.50
+    fig4_h = 3.60
     fig4_y = y - fig4_h
-    _fig_embed(fig, _FIG("fig4_taxonomy"), FIG_X, fig4_y, FIG_W, fig4_h)
+    _fig_embed(fig, _FIG("fig4_taxonomy"), FIG_X, fig4_y, FIG_W, fig4_h, crop=True)
     y = fig4_y - 0.04
     _caption(ax, ML, y,
         "Figure 4. Learning objectives taxonomy. Each point = one item. "
