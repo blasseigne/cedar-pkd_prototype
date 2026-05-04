@@ -1166,7 +1166,7 @@ def main():
         for name, builder in pages:
             print(f"  Building: {name}...")
             f = builder()
-            pdf.savefig(f, bbox_inches="tight")
+            pdf.savefig(f, bbox_inches="tight", dpi=300)
             plt.close(f)
 
     print(f"\nReport saved: {out_path}")
