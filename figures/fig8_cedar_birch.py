@@ -110,11 +110,13 @@ def main():
     gap_y = 4.55
 
     _box(ax, gap_x, gap_y, gap_w, gap_h,
-         fc=GAP_LIGHT, ec=GAP_COLOR, lw=1.8)
-    _label(ax, gap_x + gap_w / 2, gap_y + gap_h / 2,
-           "ADPKD Knowledge Gaps in Patients & Clinicians\n"
+         fc=GAP_COLOR, ec=GAP_COLOR, lw=1.8)
+    _label(ax, gap_x + gap_w / 2, gap_y + gap_h * 0.64,
+           "ADPKD Knowledge Gaps in Patients & Clinicians",
+           size=8.5, weight="bold", color="white", ls=1.4)
+    _label(ax, gap_x + gap_w / 2, gap_y + gap_h * 0.24,
            "Delayed diagnosis · Genetics literacy · Testing utilisation",
-           size=8.0, weight="bold", color=GAP_COLOR, ls=1.4)
+           size=6.8, color="white", ls=1.4)
 
     # ══════════════════════════════════════════════════════════════════════
     # MIDDLE — Two tool columns

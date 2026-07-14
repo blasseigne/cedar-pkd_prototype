@@ -163,9 +163,10 @@ def make_fig4(data):
                    "Audience", "Demo Tags"]
 
     row_h  = 1.0 / (n_obj + 2.5)
-    fig_h  = row_h * (n_obj + 2.5) * 30   # scale to inches
+    fig_h  = 6.2   # sized so 16-obj table fills the figure cleanly
 
-    fig, ax = plt.subplots(figsize=(7.0, min(fig_h, 9.0)))
+    fig, ax = plt.subplots(figsize=(7.0, fig_h))
+    plt.subplots_adjust(left=0, right=0.955, top=0.93, bottom=0.09)
     ax.axis("off")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -332,11 +333,11 @@ def make_fig4(data):
     leg1 = fig.legend(handles=topic_patches,
                       title="Topic area",     title_fontsize=5.5,
                       fontsize=5.5,           loc="lower left",
-                      bbox_to_anchor=(0.0, -0.05), ncol=3, framealpha=0.9)
+                      bbox_to_anchor=(0.0, 0.0), ncol=3, framealpha=0.9)
     fig.legend(handles=tier_patches,
                title="IRT difficulty tier", title_fontsize=5.5,
                fontsize=5.5,               loc="lower right",
-               bbox_to_anchor=(0.99, -0.05), ncol=3, framealpha=0.9)
+               bbox_to_anchor=(0.955, 0.0), ncol=3, framealpha=0.9)
     fig.add_artist(leg1)
 
     fig.suptitle(

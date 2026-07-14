@@ -89,8 +89,9 @@ def make_fig3(data):
     n_rows = len(df)
     n_cols = len(col_labels)
 
-    fig_h = 0.28 * (n_rows + 2) + 0.6   # dynamic height
+    fig_h = 0.24 * (n_rows + 2)   # compact: each row ~0.24 in of axes height
     fig, ax = plt.subplots(figsize=(7.0, fig_h))
+    plt.subplots_adjust(left=0, right=1, top=0.93, bottom=0.11)
     ax.axis("off")
 
     row_h   = 1.0 / (n_rows + 2)
@@ -207,11 +208,11 @@ def make_fig3(data):
     ]
     leg1 = fig.legend(handles=legend_patches, title="Topic area",
                       title_fontsize=5.5, fontsize=5.5,
-                      loc="lower left", bbox_to_anchor=(0.01, -0.06),
+                      loc="lower left", bbox_to_anchor=(0.01, 0.01),
                       ncol=3, framealpha=0.9)
     fig.legend(handles=blooms_patches, title="Bloom's level",
                title_fontsize=5.5, fontsize=5.5,
-               loc="lower right", bbox_to_anchor=(0.99, -0.06),
+               loc="lower right", bbox_to_anchor=(0.99, 0.01),
                ncol=3, framealpha=0.9)
     fig.add_artist(leg1)
 

@@ -215,11 +215,6 @@ def main():
             hdr_sub="Same content for every learner",
             show_badges=False)
 
-    # "Any learner" label
-    _t(ax, C1_X + C1_W / 2, Q_TOP + 0.07,
-       "Any learner", ha="center", va="bottom",
-       fontsize=7.0, color=STATIC_HDR, fontweight="bold")
-
     # Footer note
     _t(ax, C1_X + C1_W / 2, P_BOT + 0.12,
        "[!] No role-filter · No demographic tailoring",
