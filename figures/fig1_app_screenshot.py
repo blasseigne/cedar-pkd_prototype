@@ -18,6 +18,7 @@ Generation
 
 import os
 import sys
+import textwrap
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -149,9 +150,9 @@ def _txt(ax, x, y, s, fs=8, c=TEXT_MAIN, weight="normal",
             ha=ha, va=va, linespacing=ls, zorder=z)
 
 
-def _bar(ax, x, y, w, h, pct, color_on, label, pct_label):
+def _bar(ax, x, y, w, h, pct, color_on, label, pct_label, label_fs=6.5):
     """Draw a labelled mastery progress bar."""
-    _txt(ax, x, y + h + 0.008, label, fs=6.5, c=TEXT_MUTED, va="bottom")
+    _txt(ax, x, y + h + 0.008, label, fs=label_fs, c=TEXT_MUTED, va="bottom")
     _rect(ax, x, y, w, h, MASTERY_TRACK, ec=None, r=0.008)
     if pct > 0:
         _rect(ax, x, y, w * pct, h, color_on, ec=None, r=0.008, z=3)
@@ -191,15 +192,15 @@ def _draw_panel(ax, state, q, role_label, accent):
     _rect(ax, -0.02, -0.02, sb_w + 0.02, 0.93, SIDEBAR_BG, ec=BORDER,
           lw=0.5, r=0.025, z=2)
 
-    _txt(ax, sb_w / 2 - 0.01, 0.845, "Progress",
+    _txt(ax, sb_w / 2 - 0.01, 0.858, "Progress",
          fs=7, c=HEADER_BG, weight="bold", ha="center", z=4)
 
     topics    = ["kidney_basics", "adpkd_genetics", "adpkd_diagnosis"]
-    bar_top   = 0.800
+    bar_top   = 0.740
     bar_h     = 0.038
     bar_gap   = 0.095
     bar_x     = 0.030
-    bar_w     = sb_w - 0.065
+    bar_w     = sb_w - 0.090
 
     for ti, topic in enumerate(topics):
         p      = state[topic]
@@ -208,8 +209,9 @@ def _draw_panel(ax, state, q, role_label, accent):
         if p >= 0.80:
             label += "  [mastered]"
         by = bar_top - ti * bar_gap
+        lfs = 5.2 if p >= 0.80 else 6.5
         _bar(ax, bar_x, by, bar_w, bar_h, p, color,
-             label, f"{int(p * 100)}%")
+             label, f"{int(p * 100)}%", label_fs=lfs)
 
     # Divider
     ax.plot([sb_w + 0.01, sb_w + 0.01], [0.02, 0.88],
@@ -248,9 +250,7 @@ def _draw_panel(ax, state, q, role_label, accent):
 
     for ki, key in enumerate(["A", "B", "C", "D"]):
         by   = btn_top - ki * (btn_h + btn_gap)
-        text = q["options"][key]
-        if len(text) > 55:
-            text = text[:52] + "..."
+        text = textwrap.fill(q["options"][key], width=44)
 
         if not q["answered"]:
             fc, ec, tc = BTN_NORMAL, EDGE_NORMAL, TEXT_MAIN
@@ -364,13 +364,6 @@ def main():
              "Clinical terminology  |  Wrong answer \u2192 AI misconception feedback",
              ha="center", va="top", fontsize=7.5, color="#3D3D3D",
              linespacing=1.5)
-
-    # Figure title
-    fig.text(0.5, 0.975,
-             "Figure 1 — CEDAR-PKD Adaptive Learning Engine: "
-             "Patient vs. Physician Prototype Views",
-             ha="center", va="top", fontsize=8.5, fontweight="bold",
-             color="#1A1A2E")
 
     save_figure(fig, "fig1_app_screenshot")
     plt.close(fig)
