@@ -214,3 +214,57 @@ Option A chosen because it honestly shows both the advantage and its nuance (del
 **Scripts impacted:** None — decision not to adopt.
 
 **Status:** Active
+
+---
+
+## [2026-07-14] DOD resubmission: generate three new figures addressing reviewer concerns
+
+**Decision:** Add three new figures (figA, figB, figC) specifically targeting critiques in the DOD PRMRP PR250279 summary statement. These are supplemental to the original fig1–fig8 and are labeled A/B/C to distinguish them as proposal-revision figures.
+
+**Rationale:** Reviewer scores were strong (Overall 1.8 = Excellent) but three specific critiques were actionable: (1) Scientist Reviewer B questioned whether CEDAR-PKD is necessary given online resources already exist; (2) Consumer Reviewer asked whether content is tailored by patient gender; (3) Scientist Reviewer B also asked why CEDAR is needed if BIRCH-PKD already answers questions. Each figure directly rebuts one critique with prototype data.
+
+**Alternatives considered:**
+- *Address critiques in text only:* Rejected — grant reviewers respond more strongly to figures than paragraphs.
+- *Modify existing figures:* Rejected — fig1–fig8 address NIH concerns; DOD concerns are distinct and should not overload existing figures.
+
+**Scripts impacted:** `figures/figA_cedar_vs_static.py`, `figures/figB_sex_tailored_paths.py`, `figures/figC_continuum_of_care.py`, `figures/compile_all.py`
+
+**Status:** Active
+
+---
+
+## [2026-07-14] Fig A: 3-column layout in data coordinates
+
+**Decision:** Use a 3-column layout (Static | CEDAR-Patient | CEDAR-Physician) with columns drawn in matplotlib data coordinates (0–7.0 inches), not axes-fraction coordinates.
+
+**Rationale:** Two iterations with `ax.transAxes` fraction coordinates produced columns too narrow for readable text and badges. Switching to inch-scale data coordinates gave full layout control. The 3-column structure (same question bank → different role-paths) is the correct architecture for rebutting "online resources are equivalent."
+
+**Scripts impacted:** `figures/figA_cedar_vs_static.py`
+
+**Status:** Active
+
+---
+
+## [2026-07-14] Fig B: stacked bar with score decomposition by demographic boost
+
+**Decision:** Show recommender score breakdown (base IRT + sex boost + family-planning boost + CKD-stage boost) as stacked horizontal bars comparing female (CKD 2, family planning) vs. male (CKD 4) profiles with identical initial knowledge states.
+
+**Rationale:** The stacked bar directly answers the consumer reviewer's gender-tailoring question with quantified boost magnitudes. Controlling for prior knowledge (same θ=0, same P(mastery)=0.30 per topic) isolates the demographic tailoring effect.
+
+**Scripts impacted:** `figures/figB_sex_tailored_paths.py`
+
+**Status:** Active
+
+---
+
+## [2026-07-14] Fig C: 3-column card layout with bottom-up vertical positioning
+
+**Decision:** Use 3 tool-cards (CEDAR | BIRCH | ASPEN) with a patient-journey timeline banner above, and compute all vertical positions bottom-up (CARD_BOT → quote → bullets → mode → header → banner → FH) so figure height exactly matches content.
+
+**Rationale:** Top-down fixed positioning with a large FH left 30–40% of the figure as empty white space. Bottom-up derivation of FH eliminates that. Inter-card handoff arrows were removed — the 0.17-inch inter-column gaps cannot accommodate label text without overlapping card content, and the handoff logic is already described in bullet text.
+
+**Alternatives rejected:** staggered activation zones (v1 — too complex, elements collided), top-down fixed FH (v2/v3 — 40% empty space), inter-card arrows with 2-line labels (overlapped bullets).
+
+**Scripts impacted:** `figures/figC_continuum_of_care.py`
+
+**Status:** Active

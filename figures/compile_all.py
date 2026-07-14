@@ -43,6 +43,10 @@ FIGURE_SCRIPTS = [
     os.path.join("figures", "fig6_adaptive_vs_static.py"),
     os.path.join("figures", "fig7_demographic_paths.py"),
     os.path.join("figures", "fig8_cedar_birch.py"),
+    # DOD PRMRP PR250279 resubmission figures (addressing reviewer concerns)
+    os.path.join("figures", "figA_cedar_vs_static.py"),
+    os.path.join("figures", "figB_sex_tailored_paths.py"),
+    os.path.join("figures", "figC_continuum_of_care.py"),
 ]
 
 
