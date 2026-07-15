@@ -50,7 +50,7 @@ N_ITEMS           = 20
 SEED              = 42
 
 PROFILE_ORDER = [
-    "newly_diagnosed_patient",
+    "average_ability_patient",
     "experienced_patient",
     "primary_care_physician",
     "nephrologist",
@@ -155,7 +155,7 @@ def _static_order(profile, questions):
 
 
 PROFILE_LABELS = {
-    "newly_diagnosed_patient": "Newly Diagnosed Patient",
+    "average_ability_patient": "New Patient",
     "experienced_patient":     "Experienced Patient",
     "primary_care_physician":  "Primary Care Physician",
     "nephrologist":            "Nephrologist",
@@ -206,17 +206,22 @@ def main():
         stat_qs     = _static_order(profile, questions)
         stat_counts = _run_session(stat_qs, pre_resps, init, bkt_params)
 
-        x_a = list(range(1, len(adap_counts) + 1))
-        x_s = list(range(1, len(stat_counts) + 1))
-        n   = min(len(adap_counts), len(stat_counts))
+        # Pad both series to MAX_X so all panels share the same x-axis
+        MAX_X = 16
+        def pad(counts, length=MAX_X):
+            last = counts[-1] if counts else 0
+            return counts + [last] * (length - len(counts))
+
+        adap_padded = pad(adap_counts)
+        stat_padded = pad(stat_counts)
+        xs = list(range(1, MAX_X + 1))
 
         # Shaded adaptive advantage
-        ax.fill_between(range(1, n + 1), adap_counts[:n], stat_counts[:n],
-                        alpha=0.12, color=color)
+        ax.fill_between(xs, adap_padded, stat_padded, alpha=0.12, color=color)
 
-        ax.plot(x_s, stat_counts, color=color, linestyle="--", linewidth=1.5,
+        ax.plot(xs, stat_padded, color=color, linestyle="--", linewidth=1.5,
                 alpha=0.7, label="Static")
-        ax.plot(x_a, adap_counts, color=color, linestyle="-",  linewidth=2.2,
+        ax.plot(xs, adap_padded, color=color, linestyle="-",  linewidth=2.2,
                 label="Adaptive")
 
         # Full-mastery reference line
@@ -226,7 +231,8 @@ def main():
                      color=color, pad=4)
         ax.set_ylim(-0.15, 3.4)
         ax.set_yticks([0, 1, 2, 3])
-        ax.set_xlim(0.5, max(len(adap_counts), len(stat_counts)) + 0.5)
+        ax.set_xlim(0.5, MAX_X + 0.5)
+        ax.set_xticks(range(2, MAX_X + 1, 2))
         ax.set_xlabel("Interaction #", fontsize=7.5)
         if idx % 2 == 0:
             ax.set_ylabel("Topics Mastered  (P >= 80%)", fontsize=7.5)
@@ -236,32 +242,8 @@ def main():
             mlines.Line2D([], [], color=color, lw=2.2, ls="-",  label="Adaptive (CEDAR-PKD)"),
             mlines.Line2D([], [], color=color, lw=1.5, ls="--", alpha=0.7, label="Static (fixed order)"),
         ]
-        ax.legend(handles=handles, fontsize=6.5, loc="upper left", framealpha=0.85)
+        ax.legend(handles=handles, fontsize=6.5, loc="lower right", framealpha=0.85)
 
-        # Explanation annotation for newly diagnosed patient
-        if pid == "newly_diagnosed_patient":
-            ax.text(
-                0.97, 0.97,
-                "\u2020  Why adaptive lags early (low \u03b8 = \u22121.5):\n"
-                "At very low ability all 3 topics start\n"
-                "equally weak, so the recommender spreads\n"
-                "items across them proportionally. Static\n"
-                "bank order clusters Module 1 first \u2014\n"
-                "reaching 1-topic mastery sooner by chance.\n"
-                "Adaptive catches up as topic gaps diverge.",
-                transform=ax.transAxes,
-                fontsize=5.5, color=color,
-                ha="right", va="top", linespacing=1.45,
-                bbox=dict(boxstyle="round,pad=0.28", facecolor="white",
-                          edgecolor=color, alpha=0.90, linewidth=0.7),
-            )
-
-    fig.suptitle(
-        "Figure 6 — Adaptive vs. Static Knowledge Gain\n"
-        "Cumulative topics mastered per learner profile  "
-        "(shaded area = adaptive advantage)",
-        fontsize=9, fontweight="bold", y=1.01,
-    )
 
     plt.tight_layout()
     save_figure(fig, "fig6_adaptive_vs_static")

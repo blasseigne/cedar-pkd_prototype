@@ -17,6 +17,7 @@ import matplotlib as mpl
 # User / profile colors
 PROFILE_COLORS = {
     "newly_diagnosed_patient":      "#4C9BE8",   # sky blue
+    "average_ability_patient":      "#4C9BE8",   # sky blue (same as newly diagnosed)
     "experienced_patient":          "#F4845F",   # coral
     "primary_care_physician":       "#56B29A",   # teal
     "nephrologist":                 "#9B72CF",   # purple
