@@ -155,10 +155,10 @@ def _static_order(profile, questions):
 
 
 PROFILE_LABELS = {
-    "average_ability_patient": "New Patient",
-    "experienced_patient":     "Experienced Patient",
-    "primary_care_physician":  "Primary Care Physician",
-    "nephrologist":            "Nephrologist",
+    "average_ability_patient": "New Patient  (θ = −0.5)",
+    "experienced_patient":     "Experienced Patient  (θ = 0)",
+    "primary_care_physician":  "Primary Care Physician  (θ = 1)",
+    "nephrologist":            "Nephrologist  (θ = 1.8)",
 }
 
 
@@ -207,10 +207,11 @@ def main():
         stat_counts = _run_session(stat_qs, pre_resps, init, bkt_params)
 
         # Pad both series to MAX_X so all panels share the same x-axis
-        MAX_X = 16
+        MAX_X = 14
         def pad(counts, length=MAX_X):
             last = counts[-1] if counts else 0
-            return counts + [last] * (length - len(counts))
+            padded = counts + [last] * max(0, length - len(counts))
+            return padded[:length]
 
         adap_padded = pad(adap_counts)
         stat_padded = pad(stat_counts)
