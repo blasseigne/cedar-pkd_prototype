@@ -435,7 +435,8 @@
       "blooms_level": "apply",
       "difficulty_prior": 0.55,
       "demographic_tags": {
-        "sex_specific": true,
+        "sex_specific": false,
+        "sex_female_specific": true,
         "disease_stage_relevant": [1, 2],
         "family_planning_relevant": true
       },
@@ -547,7 +548,8 @@
       "blooms_level": "apply",
       "difficulty_prior": 0.60,
       "demographic_tags": {
-        "sex_specific": true,
+        "sex_specific": false,
+        "sex_female_specific": true,
         "disease_stage_relevant": [1, 2],
         "family_planning_relevant": true
       },
@@ -599,11 +601,12 @@
         "D": "Genetic testing can still benefit family members and inform transplant donor evaluation from relatives"
       },
       "explanation": "Even at advanced CKD, genetic testing provides value for cascade testing of at-risk relatives, informing living donor evaluation (a relative who carries the same variant may not be an appropriate kidney donor), and providing prognostic clarity. Tolvaptan is generally indicated for earlier-stage patients at risk of rapid progression.",
-      "audience": "physician",
+      "audience": "both",
       "blooms_level": "apply",
       "difficulty_prior": 0.70,
       "demographic_tags": {
         "sex_specific": false,
+        "sex_male_specific": true,
         "disease_stage_relevant": [4, 5],
         "family_planning_relevant": false
       },
@@ -631,7 +634,8 @@
       "blooms_level": "understand",
       "difficulty_prior": 0.65,
       "demographic_tags": {
-        "sex_specific": true,
+        "sex_specific": false,
+        "sex_female_specific": true,
         "disease_stage_relevant": [],
         "family_planning_relevant": true
       },

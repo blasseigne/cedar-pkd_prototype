@@ -36,9 +36,11 @@ import numpy as np
 # ---------------------------------------------------------------------------
 # Demographic boost weights (additive to base score)
 # ---------------------------------------------------------------------------
-BOOST_SEX_SPECIFIC    = 0.30   # item has sex-specific clinical content
-BOOST_FAMILY_PLANNING = 0.40   # item is relevant to reproductive planning
-BOOST_DISEASE_STAGE   = 0.30   # item matches learner's current CKD stage
+BOOST_SEX_SPECIFIC        = 0.30   # item has sex-specific content (generic/legacy tag)
+BOOST_SEX_FEMALE_SPECIFIC = 0.30   # item has female-specific content (e.g. liver cysts, IVF/PGT)
+BOOST_SEX_MALE_SPECIFIC   = 0.30   # item has male-specific content (e.g. Stage 4 cascade testing)
+BOOST_FAMILY_PLANNING     = 0.40   # item is relevant to reproductive planning
+BOOST_DISEASE_STAGE       = 0.30   # item matches learner's current CKD stage
 
 
 # ---------------------------------------------------------------------------
@@ -83,11 +85,20 @@ def _score_item(question, a_estimated, knowledge_state, user_profile):
     demo_tags = question.get("demographic_tags", {})
     boost     = 0.0
 
-    # Sex-specific boost — only when learner has a specified biological sex
+    # Sex-specific boost — generic legacy tag (fires for either sex)
     if demo_tags.get("sex_specific", False):
         sex = user_profile.get("sex", "not_specified")
         if sex in ("female", "male"):
             boost += BOOST_SEX_SPECIFIC
+
+    # Granular sex-specific boosts — fire only for the matching sex
+    if demo_tags.get("sex_female_specific", False):
+        if user_profile.get("sex") == "female":
+            boost += BOOST_SEX_FEMALE_SPECIFIC
+
+    if demo_tags.get("sex_male_specific", False):
+        if user_profile.get("sex") == "male":
+            boost += BOOST_SEX_MALE_SPECIFIC
 
     # Family-planning boost
     if demo_tags.get("family_planning_relevant", False):
