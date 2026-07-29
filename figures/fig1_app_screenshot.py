@@ -150,13 +150,13 @@ def _txt(ax, x, y, s, fs=8, c=TEXT_MAIN, weight="normal",
             ha=ha, va=va, linespacing=ls, zorder=z)
 
 
-def _bar(ax, x, y, w, h, pct, color_on, label, pct_label, label_fs=6.5):
+def _bar(ax, x, y, w, h, pct, color_on, label, pct_label, label_fs=7.0):
     """Draw a labelled mastery progress bar."""
-    _txt(ax, x, y + h + 0.008, label, fs=label_fs, c=TEXT_MUTED, va="bottom")
+    _txt(ax, x, y + h + 0.008, label, fs=label_fs, c=TEXT_MUTED, va="bottom", weight="bold")
     _rect(ax, x, y, w, h, MASTERY_TRACK, ec=None, r=0.008)
     if pct > 0:
         _rect(ax, x, y, w * pct, h, color_on, ec=None, r=0.008, z=3)
-    _txt(ax, x + w + 0.015, y + h / 2, pct_label, fs=6.5, c=TEXT_MUTED)
+    _txt(ax, x + w + 0.015, y + h / 2, pct_label, fs=7.0, c=TEXT_MUTED, weight="bold")
 
 
 def _draw_panel(ax, state, q, role_label, accent):
@@ -181,8 +181,8 @@ def _draw_panel(ax, state, q, role_label, accent):
 
     # ── Header bar ────────────────────────────────────────────────────────
     _rect(ax, -0.02, 0.90, 1.04, 0.12, HEADER_BG, r=0.025, z=3)
-    _txt(ax, 0.04, 0.961, "CEDAR-PKD", fs=9, c="#FFFFFF", weight="bold", z=5)
-    _txt(ax, 0.96, 0.961, role_label, fs=7, c="#AED6F1", ha="right", z=5)
+    _txt(ax, 0.04, 0.961, "CEDAR-PKD", fs=10, c="#FFFFFF", weight="bold", z=5)
+    _txt(ax, 0.96, 0.961, role_label, fs=8, c="#AED6F1", ha="right", z=5)
 
     # Accent stripe below header
     _rect(ax, -0.02, 0.887, 1.04, 0.018, accent, ec=None, r=0.0, z=4)
@@ -193,7 +193,7 @@ def _draw_panel(ax, state, q, role_label, accent):
           lw=0.5, r=0.025, z=2)
 
     _txt(ax, sb_w / 2 - 0.01, 0.858, "Progress",
-         fs=7, c=HEADER_BG, weight="bold", ha="center", z=4)
+         fs=8, c=HEADER_BG, weight="bold", ha="center", z=4)
 
     topics    = ["kidney_basics", "adpkd_genetics", "adpkd_diagnosis"]
     bar_top   = 0.740
@@ -209,7 +209,7 @@ def _draw_panel(ax, state, q, role_label, accent):
         if p >= 0.80:
             label += "  [mastered]"
         by = bar_top - ti * bar_gap
-        lfs = 5.2 if p >= 0.80 else 6.5
+        lfs = 6.0 if p >= 0.80 else 7.0
         _bar(ax, bar_x, by, bar_w, bar_h, p, color,
              label, f"{int(p * 100)}%", label_fs=lfs)
 
@@ -224,7 +224,7 @@ def _draw_panel(ax, state, q, role_label, accent):
           MASTERY_TRACK, ec=BORDER, lw=0.5, r=0.015, z=3)
     _txt(ax, sb_w / 2 - 0.01, 0.359,
          f"Mastered: {n_mast}/3\nQ {q['number']} of 15",
-         fs=6.5, c=TEXT_MUTED, ha="center", ls=1.5, z=4)
+         fs=7.0, c=TEXT_MUTED, ha="center", ls=1.5, z=4, weight="bold")
 
     # ── Main content area ─────────────────────────────────────────────────
     mx  = sb_w + 0.055
@@ -237,20 +237,20 @@ def _draw_panel(ax, state, q, role_label, accent):
     _rect(ax, mx, tag_y, tag_w, tag_h, TOPIC_PALETTE[q["topic"]],
           ec=None, r=0.01, z=3)
     _txt(ax, mx + tag_w / 2, tag_y + tag_h / 2,
-         TOPIC_LABELS[q["topic"]], fs=6.2, c=TEXT_MAIN, ha="center", z=4)
+         TOPIC_LABELS[q["topic"]], fs=7.0, c=TEXT_MAIN, ha="center", z=4, weight="bold")
 
     # Question text
-    _txt(ax, mx, 0.765, q["text"],
-         fs=7.8, c=TEXT_MAIN, weight="bold", va="top", ls=1.4, z=4)
+    _txt(ax, mx, 0.800, q["text"],
+         fs=8.5, c=TEXT_MAIN, weight="bold", va="top", ls=1.4, z=4)
 
     # Answer buttons
-    btn_top = 0.615
+    btn_top = 0.635
     btn_h   = 0.085
     btn_gap = 0.012
 
     for ki, key in enumerate(["A", "B", "C", "D"]):
         by   = btn_top - ki * (btn_h + btn_gap)
-        text = textwrap.fill(q["options"][key], width=44)
+        text = textwrap.fill(q["options"][key], width=38)
 
         if not q["answered"]:
             fc, ec, tc = BTN_NORMAL, EDGE_NORMAL, TEXT_MAIN
@@ -263,9 +263,9 @@ def _draw_panel(ax, state, q, role_label, accent):
 
         _rect(ax, mx, by, mw, btn_h, fc, ec=ec, lw=0.9, r=0.012, z=3)
         _txt(ax, mx + 0.018, by + btn_h / 2,
-             f"{key}.", fs=7.0, c=tc, weight="bold", z=4)
+             f"{key}.", fs=7.5, c=tc, weight="bold", z=4)
         _txt(ax, mx + 0.060, by + btn_h / 2,
-             text, fs=6.8, c=tc, z=4)
+             text, fs=7.5, c=tc, z=4)
 
     # ── Post-answer feedback panel ────────────────────────────────────────
     # If the learner chose wrong → AI misconception-targeted explanation.
@@ -286,13 +286,13 @@ def _draw_panel(ax, state, q, role_label, accent):
         # Header bar: AI brand
         _txt(ax, mx + mw / 2, exp_y + exp_h - 0.020,
              "AI  \u00b7  CEDAR-PKD  \u00b7  Misconception Feedback",
-             fs=5.8, c="white", weight="bold", va="center", ha="center", z=5)
+             fs=6.5, c="white", weight="bold", va="center", ha="center", z=5)
 
         # Misconception tag
         misc = q.get("misconception", "").replace("_", " ")
         _txt(ax, mx + 0.016, exp_y + exp_h - 0.056,
              f"Misconception: {misc}",
-             fs=5.6, c="#6C3483", weight="bold", va="top", z=4)
+             fs=6.2, c="#6C3483", weight="bold", va="top", z=4)
 
         # Word-wrapped explanation text (≤ 3 lines)
         words = q["llm_explanation"].split()
@@ -307,7 +307,7 @@ def _draw_panel(ax, state, q, role_label, accent):
         for li, line in enumerate(lines[:3]):
             _txt(ax, mx + 0.016,
                  exp_y + exp_h - 0.090 - li * 0.033,
-                 line, fs=5.8, c="#4A235A", va="top", z=4)
+                 line, fs=6.5, c="#4A235A", va="top", z=4)
 
     elif q["answered"] and "explanation" in q:
 
@@ -317,7 +317,7 @@ def _draw_panel(ax, state, q, role_label, accent):
         _rect(ax, mx, exp_y, mw, exp_h, "#EBF5FB", ec="#AED6F1",
               lw=0.8, r=0.012, z=3)
         _txt(ax, mx + 0.018, exp_y + exp_h - 0.020,
-             "Explanation", fs=6.5, c="#154360", weight="bold", va="top", z=4)
+             "Explanation", fs=7.0, c="#154360", weight="bold", va="top", z=4)
 
         words = q["explanation"].split()
         lines, cur = [], ""
@@ -331,7 +331,7 @@ def _draw_panel(ax, state, q, role_label, accent):
         for li, line in enumerate(lines[:3]):
             _txt(ax, mx + 0.018,
                  exp_y + exp_h - 0.048 - li * 0.036,
-                 line, fs=6.2, c="#1A3C5E", va="top", z=4)
+                 line, fs=7.0, c="#1A3C5E", va="top", z=4)
 
 
 # ---------------------------------------------------------------------------
@@ -357,12 +357,12 @@ def main():
     fig.text(0.255, 0.085,
              "Patient / Caregiver View\n"
              "Plain-language questions  |  Awaiting response",
-             ha="center", va="top", fontsize=7.5, color="#3D3D3D",
+             ha="center", va="top", fontsize=8.5, color="#3D3D3D",
              linespacing=1.5)
     fig.text(0.748, 0.085,
              "Healthcare Provider View\n"
              "Clinical terminology  |  Wrong answer \u2192 AI misconception feedback",
-             ha="center", va="top", fontsize=7.5, color="#3D3D3D",
+             ha="center", va="top", fontsize=8.5, color="#3D3D3D",
              linespacing=1.5)
 
     save_figure(fig, "fig1_app_screenshot")

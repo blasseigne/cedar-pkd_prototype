@@ -48,16 +48,18 @@ WHITE        = "#FFFFFF"
 GRAY_MED     = "#AAB7B8"
 GRAY_DARK    = "#566573"
 
-# ── Layout constants (all in data units; figure is 7.0 × 5.2 inches) ─────────
-FW, FH = 7.0, 5.2
+# ── Layout constants (all in data units; figure is 7.0 × 5.0 inches) ─────────
+FW, FH = 7.0, 4.70
 
 # Column x positions and widths
 C1_X, C1_W = 0.15, 1.96   # Static resource
 C2_X, C2_W = 2.27, 2.15   # CEDAR: Patient
 C3_X, C3_W = 4.58, 2.25   # CEDAR: Physician
 
-P_BOT = 0.45   # panel bottom (data y)
-P_TOP = 4.95   # panel top
+# Panel height derived from content:
+#   HDR_H(0.56) + sub-header gap(0.18) + 4 slots(3.04) + bottom pad(0.20) = 3.98
+P_BOT = 0.28
+P_TOP = P_BOT + 3.98   # = 4.26 — snug fit to content
 
 HDR_H   = 0.56   # column header height
 Q_H     = 0.40   # question box height
@@ -69,7 +71,7 @@ ROW_G   = 0.14   # gap: bottom of badge strip → top of next q-box
 SLOT_H  = Q_H + BDG_G + BDG_H + ROW_G   # = 0.76
 
 # Y of top of first question box, just below the header
-Q_TOP   = P_TOP - HDR_H - 0.18   # = 4.21
+Q_TOP   = P_TOP - HDR_H - 0.18
 
 
 # ── Primitives ────────────────────────────────────────────────────────────────
@@ -98,9 +100,9 @@ def _col_header(ax, cx, cy, cw, ch, title, sub, hdr_fc, sub_c=WHITE):
     """Draw a rounded column header box."""
     _rbox(ax, cx, cy, cw, ch, fc=hdr_fc, ec=hdr_fc, lw=0, r=0.08)
     _t(ax, cx + cw / 2, cy + ch * 0.62, title,
-       ha="center", va="center", fontsize=8.5, color=WHITE, fontweight="bold")
+       ha="center", va="center", fontsize=10.5, color=WHITE, fontweight="bold")
     _t(ax, cx + cw / 2, cy + ch * 0.24, sub,
-       ha="center", va="center", fontsize=6.0, color=sub_c, fontstyle="italic")
+       ha="center", va="center", fontsize=7.5, color=sub_c, fontstyle="italic")
 
 
 def _q_box(ax, cx, cy_top, cw, label, fc, ec, inset=0.08):
@@ -110,7 +112,7 @@ def _q_box(ax, cx, cy_top, cw, label, fc, ec, inset=0.08):
     w  = cw - 2 * inset
     _rbox(ax, x, y, w, Q_H, fc=fc, ec=ec, lw=0.9, r=0.07)
     _t(ax, x + w / 2, y + Q_H / 2, label,
-       ha="center", va="center", fontsize=6.2, color=CEDAR_DARK, wrap=False)
+       ha="center", va="center", fontsize=7.5, color=CEDAR_DARK, fontweight="bold", wrap=False)
     return y   # return box bottom y
 
 
@@ -131,7 +133,7 @@ def _badges(ax, cx, box_bottom, cw, badges, inset=0.08):
         bxi = bx + i * (bw + 0.06)
         _rbox(ax, bxi, strip_bot, bw, BDG_H, fc=fc, ec=fc, lw=0, r=0.04)
         _t(ax, bxi + bw / 2, strip_bot + BDG_H / 2, lbl,
-           ha="center", va="center", fontsize=5.0, color=WHITE, fontweight="bold")
+           ha="center", va="center", fontsize=6.2, color=WHITE, fontweight="bold")
     return strip_bot   # bottom y of badge strip
 
 
@@ -167,10 +169,10 @@ def _column(ax, cx, cw, questions, fc, ec, hdr_fc, panel_fc,
 # ── Content definitions ───────────────────────────────────────────────────────
 
 STATIC_QS = [
-    ("What is ADPKD and how common is it?",      []),
-    ("Which genes cause ADPKD (PKD1, PKD2)?",    []),
-    ("What are the symptoms of ADPKD?",          []),
-    ("How is ADPKD diagnosed?",                  []),
+    ("What is ADPKD and\nhow common is it?",     []),
+    ("Which genes cause\nADPKD (PKD1, PKD2)?",  []),
+    ("What are the\nsymptoms of ADPKD?",         []),
+    ("How is ADPKD\ndiagnosed?",                 []),
 ]
 
 PATIENT_QS = [
@@ -216,16 +218,16 @@ def main():
             show_badges=False)
 
     # Footer note
-    _t(ax, C1_X + C1_W / 2, P_BOT + 0.12,
+    _t(ax, C1_X + C1_W / 2, P_BOT + 0.10,
        "[!] No role-filter · No demographic tailoring",
-       ha="center", va="center", fontsize=5.5, color=STATIC_HDR, fontstyle="italic")
+       ha="center", va="center", fontsize=7.0, color=STATIC_HDR, fontstyle="italic")
 
     # ── VS. separator ─────────────────────────────────────────────────────────
     vx = C1_X + C1_W + (C2_X - C1_X - C1_W) / 2
     ax.plot([vx, vx], [P_BOT + 0.3, P_TOP - 0.3],
             color=GRAY_MED, lw=0.8, linestyle="--")
     _t(ax, vx, (P_BOT + P_TOP) / 2, "VS.",
-       ha="center", va="center", fontsize=11.5,
+       ha="center", va="center", fontsize=13.5,
        color=GRAY_DARK, fontweight="bold",
        bbox=dict(facecolor=WHITE, edgecolor=GRAY_MED,
                  boxstyle="round,pad=0.18", linewidth=0.8))
@@ -237,9 +239,9 @@ def main():
             hdr_title="CEDAR-PKD: Patient",
             hdr_sub="Female · CKD Stage 2 · Family planning")
 
-    _t(ax, C2_X + C2_W / 2, P_BOT + 0.12,
+    _t(ax, C2_X + C2_W / 2, P_BOT + 0.10,
        "[+] Role-filtered · Sex-tailored · Stage-matched",
-       ha="center", va="center", fontsize=5.5, color=PATIENT_C, fontstyle="italic")
+       ha="center", va="center", fontsize=7.0, color=PATIENT_C, fontstyle="italic")
 
     # ── Column 3 — CEDAR physician path ──────────────────────────────────────
     _column(ax, C3_X, C3_W, PHYSICIAN_QS,
@@ -248,16 +250,16 @@ def main():
             hdr_title="CEDAR-PKD: Clinician",
             hdr_sub="Experienced PCP · Role-filtered")
 
-    _t(ax, C3_X + C3_W / 2, P_BOT + 0.12,
+    _t(ax, C3_X + C3_W / 2, P_BOT + 0.10,
        "[+] Role-filtered · High-discrimination items first",
-       ha="center", va="center", fontsize=5.5, color=PHYSICIAN_C, fontstyle="italic")
+       ha="center", va="center", fontsize=7.0, color=PHYSICIAN_C, fontstyle="italic")
 
     # ── Shared item bank callout ──────────────────────────────────────────────
-    _rbox(ax, C2_X, P_TOP + 0.05, C3_X + C3_W - C2_X, 0.24,
+    _rbox(ax, C1_X, P_TOP + 0.10, C3_X + C3_W - C1_X, 0.22,
           fc="#D6EAF8", ec=CEDAR_BLUE, lw=0.8, r=0.05)
-    _t(ax, (C2_X + C3_X + C3_W) / 2, P_TOP + 0.17,
-       "Same 20-item ADPKD question bank  --  entirely different personalised sequence per learner",
-       ha="center", va="center", fontsize=6.5, color=CEDAR_DARK)
+    _t(ax, (C1_X + C3_X + C3_W) / 2, P_TOP + 0.21,
+       "Same 20-item ADPKD question bank  —  entirely different personalised sequence per learner",
+       ha="center", va="center", fontsize=8.0, color=CEDAR_DARK, fontweight="bold")
 
     # ── Badge legend ──────────────────────────────────────────────────────────
     legend_items = [
@@ -266,24 +268,17 @@ def main():
         (BADGE_STAGE, "+CKD stage match"),
         (BADGE_ROLE,  "+Clinician only"),
     ]
-    lx, ly = 2.27, 0.18
-    _t(ax, lx - 0.05, ly + 0.06, "Boost key:",
-       ha="left", va="center", fontsize=6.5, color=CEDAR_DARK, fontweight="bold")
-    bx = lx + 0.80
+    lx, ly = C1_X, 0.05
+    _t(ax, lx, ly + 0.06, "Boost key:",
+       ha="left", va="center", fontsize=8.0, color=CEDAR_DARK, fontweight="bold")
+    bx = lx + 0.88
     for fc, label in legend_items:
         _rbox(ax, bx, ly - 0.01, 0.14, 0.14, fc=fc, ec=fc, lw=0, r=0.03)
-        _t(ax, bx + 0.18, ly + 0.06, label,
-           ha="left", va="center", fontsize=6.0, color=CEDAR_DARK)
-        bx += 1.05
+        _t(ax, bx + 0.19, ly + 0.06, label,
+           ha="left", va="center", fontsize=7.5, color=CEDAR_DARK)
+        bx += 1.20
 
-    # ── Figure title ──────────────────────────────────────────────────────────
-    fig.suptitle(
-        "Figure A  —  CEDAR-PKD Adaptive Learning vs. Generic Online Resources\n"
-        "Same item bank · Role-filtered · Demographically personalised · Mastery-tracked",
-        fontsize=8.5, fontweight="bold", y=1.04,
-    )
-
-    plt.tight_layout(pad=0.2)
+    plt.tight_layout(pad=0.1)
     save_figure(fig, "figA_cedar_vs_static")
     plt.close(fig)
     print("Figure A complete.")
